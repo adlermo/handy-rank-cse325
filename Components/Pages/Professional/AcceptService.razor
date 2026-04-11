@@ -1,3 +1,11 @@
 @page "/professional/aceitar-servico/{id:int}"
-<h1>Aceitar Serviço</h1>
-<!-- Aceitar serviço -->
+@attribute [Authorize(Roles = "Handyman")]
+
+<section class="narrow-page page-section">
+    <div class="card panel">
+        <p class="page-eyebrow">Accept job</p>
+        <h1>Accept Service</h1>
+        <p class="page-description">Job acceptance details will appear here once service records are connected.</p>
+        <a class="btn btn-outline-primary" href="/professional/servicos-disponiveis">Back to available jobs</a>
+    </div>
+</section>

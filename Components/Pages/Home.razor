@@ -1,4 +1,53 @@
 @page "/"
-<h1>Bem-vindo ao HandyRank Serviços!</h1>
-<p>Faça login ou cadastre-se para acessar o marketplace de serviços manuais.</p>
-<a href="/login">Login</a> | <a href="/signup">Cadastro</a>
+@attribute [AllowAnonymous]
+
+<section class="hero-section">
+    <div class="hero-content">
+        <p class="page-eyebrow">HandyRank Marketplace</p>
+        <h1>Find reliable help for the work that needs doing.</h1>
+        <p>
+            Customers can request services, handymen can find available jobs, and every account gets a focused workspace.
+        </p>
+
+        <AuthorizeView>
+            <Authorized Context="homeAuth">
+                <div class="button-row">
+                    <AuthorizeView Roles="Customer">
+                        <Authorized Context="customerAuth">
+                            <a class="btn btn-primary" href="/customer/meus-servicos">View My Services</a>
+                            <a class="btn btn-outline-primary" href="/customer/criar-servico">Create Service</a>
+                        </Authorized>
+                    </AuthorizeView>
+
+                    <AuthorizeView Roles="Handyman">
+                        <Authorized Context="handymanAuth">
+                            <a class="btn btn-primary" href="/professional/servicos-disponiveis">Browse Available Jobs</a>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="button-row">
+                    <a class="btn btn-primary" href="/signup">Create Account</a>
+                    <a class="btn btn-outline-primary" href="/login">Login</a>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+
+    <img src="/android-chrome-192x192.png" alt="" class="hero-mark" />
+</section>
+
+<section class="service-grid">
+    <div class="card service-card">
+        <span class="status-pill">For Customers</span>
+        <h2>Post a service request</h2>
+        <p class="muted-text">Keep your jobs organized from request to completion.</p>
+    </div>
+
+    <div class="card service-card">
+        <span class="status-pill">For Handymen</span>
+        <h2>Find available work</h2>
+        <p class="muted-text">Review open requests and choose the jobs that fit your skills.</p>
+    </div>
+</section>

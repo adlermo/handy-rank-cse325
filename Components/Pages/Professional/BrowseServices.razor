@@ -1,3 +1,16 @@
 @page "/professional/servicos-disponiveis"
-<h1>Serviços Disponíveis</h1>
-<!-- Lista de serviços para aceitar -->
+@attribute [Authorize(Roles = "Handyman")]
+
+<section class="page-section">
+    <div class="page-header">
+        <p class="page-eyebrow">Handyman workspace</p>
+        <h1>Available Jobs</h1>
+        <p class="page-description">Review open customer requests and accept jobs that match your skills.</p>
+    </div>
+
+    <div class="card empty-state">
+        <span class="status-pill">No open jobs</span>
+        <h2>Nothing available right now</h2>
+        <p class="muted-text">New customer requests will appear here when the marketplace has active jobs.</p>
+    </div>
+</section>

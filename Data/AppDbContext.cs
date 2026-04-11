@@ -13,9 +13,20 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .Property(user => user.Role)
-            .HasConversion<string>();
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasIndex(user => user.Email)
+                .IsUnique();
+
+            entity.Property(user => user.Email)
+                .HasMaxLength(256);
+
+            entity.Property(user => user.PasswordHash)
+                .HasMaxLength(512);
+
+            entity.Property(user => user.Role)
+                .HasConversion<string>();
+        });
 
         modelBuilder.Entity<Job>()
             .Property(job => job.Status)

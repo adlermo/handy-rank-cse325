@@ -1,3 +1,28 @@
 @page "/customer/criar-servico"
-<h1>Criar Serviço</h1>
-<!-- Formulário para criar um serviço -->
+@attribute [Authorize(Roles = "Customer")]
+
+<section class="narrow-page page-section">
+    <div class="page-header">
+        <p class="page-eyebrow">New request</p>
+        <h1>Create Service</h1>
+        <p class="page-description">This layout is ready for the service creation flow.</p>
+    </div>
+
+    <div class="card panel">
+        <div class="auth-form">
+            <div class="form-field">
+                <label class="form-label" for="title">Service title</label>
+                <input id="title" class="form-control" type="text" placeholder="Example: Fix kitchen sink" disabled />
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="description">Description</label>
+                <textarea id="description" class="form-control" rows="4" placeholder="Details will go here." disabled></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary" disabled>Create Service</button>
+            <a class="btn btn-link" href="/customer/meus-servicos">Back to services</a>
+        </div>
+    </div>
+</section>

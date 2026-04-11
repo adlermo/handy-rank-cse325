@@ -1,3 +1,20 @@
 @page "/customer/meus-servicos"
-<h1>Meus Serviços</h1>
-<!-- Lista de serviços criados pelo cliente -->
+@attribute [Authorize(Roles = "Customer")]
+
+<section class="page-section">
+    <div class="page-header">
+        <p class="page-eyebrow">Customer workspace</p>
+        <h1>My Services</h1>
+        <p class="page-description">Track service requests from draft to completion.</p>
+    </div>
+
+    <div class="button-row">
+        <a class="btn btn-primary" href="/customer/criar-servico">Create Service</a>
+    </div>
+
+    <div class="card empty-state">
+        <span class="status-pill">No services yet</span>
+        <h2>Your service list is empty</h2>
+        <p class="muted-text">Create your first request when you are ready to hire help.</p>
+    </div>
+</section>

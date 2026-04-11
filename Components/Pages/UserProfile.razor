@@ -1,3 +1,28 @@
 @page "/perfil"
-<h1>Meu Perfil</h1>
-<!-- Gerenciamento do perfil do usuário -->
+@attribute [Authorize]
+@using System.Security.Claims
+
+<section class="narrow-page page-section">
+    <div class="page-header">
+        <p class="page-eyebrow">Account</p>
+        <h1>Profile</h1>
+        <p class="page-description">Your HandyRank account details.</p>
+    </div>
+
+    <div class="card panel">
+        <AuthorizeView>
+            <Authorized Context="profileAuth">
+                <div class="profile-grid">
+                    <div class="profile-row">
+                        <span class="profile-label">Email</span>
+                        <span class="profile-value">@profileAuth.User.FindFirstValue(ClaimTypes.Email)</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-label">Role</span>
+                        <span class="profile-value">@profileAuth.User.FindFirstValue(ClaimTypes.Role)</span>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+</section>

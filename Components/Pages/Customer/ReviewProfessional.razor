@@ -1,3 +1,11 @@
 @page "/customer/avaliar-profissional/{id:int}"
-<h1>Avaliar Profissional</h1>
-<!-- Avaliação do profissional -->
+@attribute [Authorize(Roles = "Customer")]
+
+<section class="narrow-page page-section">
+    <div class="card panel">
+        <p class="page-eyebrow">Review</p>
+        <h1>Review Professional</h1>
+        <p class="page-description">Customer feedback will be added after completed services are available.</p>
+        <a class="btn btn-outline-primary" href="/customer/meus-servicos">Back to services</a>
+    </div>
+</section>

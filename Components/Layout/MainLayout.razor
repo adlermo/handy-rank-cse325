@@ -1,12 +1,45 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<div class="page">
-    @* <div class="sidebar">
-        <NavMenu />
-    </div> *@
+<div class="app-shell">
+    <header class="site-header">
+        <nav class="site-nav">
+            <a class="brand-link" href="/">
+                <img src="/favicon-32x32.png" alt="" class="brand-logo" />
+                <span>HandyRank</span>
+            </a>
 
-    <main>
-        <article class="content px-4">
+            <div class="nav-links">
+                <AuthorizeView Roles="Customer">
+                    <Authorized>
+                        <a href="/customer/meus-servicos">My Services</a>
+                    </Authorized>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Handyman">
+                    <Authorized>
+                        <a href="/professional/servicos-disponiveis">Available Jobs</a>
+                    </Authorized>
+                </AuthorizeView>
+
+                <AuthorizeView>
+                    <Authorized Context="authContext">
+                        <a class="user-link" href="/perfil">@authContext.User.Identity?.Name</a>
+                        <form method="post" action="/auth/logout" class="logout-form">
+                            <AntiforgeryToken />
+                            <button type="submit" class="nav-button">Logout</button>
+                        </form>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="/login">Login</a>
+                        <a class="nav-button" href="/signup">Sign Up</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <article class="page-container">
             @Body
         </article>
     </main>
@@ -15,5 +48,5 @@
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
+    <span class="dismiss">x</span>
 </div>

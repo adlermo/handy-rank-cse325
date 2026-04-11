@@ -1,3 +1,11 @@
 @page "/customer/concluir-servico/{id:int}"
-<h1>Concluir Serviço</h1>
-<!-- Marcar serviço como concluído -->
+@attribute [Authorize(Roles = "Customer")]
+
+<section class="narrow-page page-section">
+    <div class="card panel">
+        <p class="page-eyebrow">Service completion</p>
+        <h1>Complete Service</h1>
+        <p class="page-description">Completion actions will appear here once service details are connected.</p>
+        <a class="btn btn-outline-primary" href="/customer/meus-servicos">Back to services</a>
+    </div>
+</section>

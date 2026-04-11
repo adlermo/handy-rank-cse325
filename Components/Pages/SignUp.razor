@@ -1,3 +1,68 @@
 @page "/signup"
-<h1>Cadastro</h1>
-<!-- Formulário de cadastro -->
+@attribute [AllowAnonymous]
+
+<section class="auth-page">
+    <div class="card auth-card">
+        <h1>Create account</h1>
+        <p class="page-description">Choose your role and start using HandyRank.</p>
+
+        @if (!string.IsNullOrWhiteSpace(AlertMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @AlertMessage
+            </div>
+        }
+
+        <form method="post" action="/auth/register" class="auth-form">
+            <AntiforgeryToken />
+            <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+
+            <div class="form-field">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="email" class="form-control" autocomplete="email" required />
+            </div>
+
+            <div class="form-field">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" name="password" type="password" class="form-control" autocomplete="new-password" minlength="8" required />
+                <div class="form-text">Use at least 8 characters.</div>
+            </div>
+
+            <div class="form-field">
+                <label for="role" class="form-label">Account type</label>
+                <select id="role" name="role" class="form-select" required>
+                    <option value="Customer">Customer</option>
+                    <option value="Handyman">Handyman</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create account</button>
+                <a class="btn btn-link" href="@LoginUrl">I already have an account</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@code {
+    [SupplyParameterFromQuery(Name = "error")]
+    public string? Error { get; set; }
+
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    private string LoginUrl => string.IsNullOrWhiteSpace(ReturnUrl)
+        ? "/login"
+        : $"/login?returnUrl={Uri.EscapeDataString(ReturnUrl)}";
+
+    private string? AlertMessage => Error switch
+    {
+        "missing" => "Enter your email and password.",
+        "invalid-email" => "Enter a valid email.",
+        "weak-password" => "Password must be at least 8 characters.",
+        "invalid-role" => "Choose a valid account type.",
+        "email-exists" => "An account already exists with this email.",
+        "invalid-form" => "Session expired. Try again.",
+        _ => null
+    };
+}

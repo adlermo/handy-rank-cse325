@@ -1,19 +1,43 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using HandyRank.Components;
 using HandyRank.Data;
+using HandyRank.Endpoints;
+using HandyRank.Models;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var connectionString = GetDatabaseConnectionString(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString, o =>
-        o.EnableRetryOnFailure()));
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "HandyRank.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing")
+            ? CookieSecurePolicy.SameAsRequest
+            : CookieSecurePolicy.Always;
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/access-denied";
+        options.SlidingExpiration = true;
+    });
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    var connectionString = GetDatabaseConnectionString(builder.Configuration);
+
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(connectionString, o =>
+            o.EnableRetryOnFailure()));
+}
 
 var app = builder.Build();
 
@@ -27,6 +51,8 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 
 if (app.Environment.IsDevelopment())
@@ -38,6 +64,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.MapAuthEndpoints();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
@@ -89,3 +116,5 @@ static string ConvertPostgresUrlToConnectionString(Uri uri)
 
     return builder.ConnectionString;
 }
+
+public partial class Program;

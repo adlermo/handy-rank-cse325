@@ -1,3 +1,67 @@
 @page "/login"
-<h1>Login</h1>
-<!-- Formulário de login -->
+@attribute [AllowAnonymous]
+
+<section class="auth-page">
+    <div class="card auth-card">
+        <h1>Welcome back</h1>
+        <p class="page-description">Login to manage your HandyRank activity.</p>
+
+        @if (!string.IsNullOrWhiteSpace(AlertMessage))
+        {
+            <div class="alert @AlertClass" role="alert">
+                @AlertMessage
+            </div>
+        }
+
+        <form method="post" action="/auth/login" class="auth-form">
+            <AntiforgeryToken />
+            <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+
+            <div class="form-field">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="email" class="form-control" autocomplete="email" required />
+            </div>
+
+            <div class="form-field">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" name="password" type="password" class="form-control" autocomplete="current-password" required />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a class="btn btn-link" href="@SignupUrl">Create account</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@code {
+    [SupplyParameterFromQuery(Name = "error")]
+    public string? Error { get; set; }
+
+    [SupplyParameterFromQuery(Name = "message")]
+    public string? Message { get; set; }
+
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    private string SignupUrl => string.IsNullOrWhiteSpace(ReturnUrl)
+        ? "/signup"
+        : $"/signup?returnUrl={Uri.EscapeDataString(ReturnUrl)}";
+
+    private string AlertClass => string.IsNullOrWhiteSpace(Error)
+        ? "alert-success"
+        : "alert-danger";
+
+    private string? AlertMessage => Error switch
+    {
+        "missing" => "Enter your email and password.",
+        "invalid" => "Email or password is invalid.",
+        "invalid-form" => "Session expired. Try again.",
+        _ => Message switch
+        {
+            "logged-out" => "You have been logged out.",
+            _ => null
+        }
+    };
+}
