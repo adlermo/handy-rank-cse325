@@ -12,4 +12,7 @@ WORKDIR /app
 
 COPY --from=build /app/out ./
 
+# 🔥 Render deafult port
+ENV ASPNETCORE_URLS=http://+:10000
+
 ENTRYPOINT ["dotnet", "HandyRank.dll"]
