@@ -22,8 +22,18 @@
         <div class="actions">
             @if (IsCustomer)
             {
-                <button class="btn-icon" @onclick="() => OnDelete.InvokeAsync(Request.Id)">🗑️</button>
-                <button class="btn-icon">✏️</button>
+                @if (confirmDeletion)
+                {
+                    <div class="modal-actions">
+                        <button class="btn btn-danger" @onclick="HandleDelete">Delete</button>
+                        <button class="btn btn-secondary" @onclick="() => confirmDeletion = false">Cancel</button>
+                    </div>
+                }
+                else
+                {
+                    <button class="btn-icon">✏️</button>
+                    <button class="btn-icon" @onclick="() => confirmDeletion = true">🗑️</button>
+                }
             }
             else
             {
@@ -44,6 +54,8 @@
 
     [Parameter] public EventCallback<int> OnAccept { get; set; }
 
+    bool confirmDeletion = false;
+
     string GetStatusClass(ServiceRequestStatus status) => status switch
     {
         ServiceRequestStatus.Open => "status-open",
@@ -52,4 +64,10 @@
         ServiceRequestStatus.Cancelled => "status-cancelled",
         _ => ""
     };
+
+    async Task HandleDelete()
+    {
+        confirmDeletion = false;
+        await OnDelete.InvokeAsync(Request.Id);
+    }
 }

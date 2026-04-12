@@ -27,23 +27,8 @@
         <div class="service-list">
             @foreach (var r in requests)
             {
-                <ServiceCard Request="r" IsCustomer="true" OnDelete="ConfirmDelete" />
+                <ServiceCard Request="r" IsCustomer="true" OnDelete="@(id => Delete(id))" />
             }
-        </div>
-    }
-
-    @if (deletingId != null)
-    {
-        <div class="modal-backdrop">
-            <div class="modal">
-                <h3>Delete this request?</h3>
-                <p>This action cannot be undone.</p>
-
-                <div class="modal-actions">
-                    <button class="btn btn-danger" @onclick="Delete">Delete</button>
-                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
-                </div>
-            </div>
         </div>
     }
 </section>
@@ -51,22 +36,16 @@
 @code {
     List<ServiceRequest> requests = new();
 
-    int? deletingId = null;
-
     protected override async Task OnInitializedAsync()
     {
         requests = await Service.GetMyRequests();
     }
 
-    async Task Delete()
+    async Task Delete(int id)
     {
-        if (deletingId is null) return;
-
-        await Service.Delete(deletingId.Value);
+        await Service.Delete(id);
 
         requests = await Service.GetMyRequests();
-
-        deletingId = null;
     }
 
     string GetStatusClass(string status) => status switch
@@ -76,14 +55,4 @@
         "Completed" => "status-completed",
         _ => ""
     };
-
-    void ConfirmDelete(int id)
-    {
-        deletingId = id;
-    }
-
-    void CancelDelete()
-    {
-        deletingId = null;
-    }
 }
