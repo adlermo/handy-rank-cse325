@@ -23,7 +23,7 @@
 
                 <AuthorizeView>
                     <Authorized Context="authContext">
-                        <a class="user-link" href="/perfil">@authContext.User.Identity?.Name</a>
+                        <a class="user-link" href="/profile">@authContext.User.Identity?.Name</a>
                         <form method="post" action="/auth/logout" class="logout-form">
                             <AntiforgeryToken />
                             <button type="submit" class="nav-button">Logout</button>

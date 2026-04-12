@@ -1,28 +1,241 @@
-@page "/perfil"
+@page "/profile"
 @attribute [Authorize]
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
+@using HandyRank.Data
+@using HandyRank.Models
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <section class="narrow-page page-section">
     <div class="page-header">
         <p class="page-eyebrow">Account</p>
         <h1>Profile</h1>
-        <p class="page-description">Your HandyRank account details.</p>
+        <p class="page-description">Keep your account details current.</p>
     </div>
 
     <div class="card panel">
-        <AuthorizeView>
-            <Authorized Context="profileAuth">
-                <div class="profile-grid">
-                    <div class="profile-row">
-                        <span class="profile-label">Email</span>
-                        <span class="profile-value">@profileAuth.User.FindFirstValue(ClaimTypes.Email)</span>
-                    </div>
-                    <div class="profile-row">
-                        <span class="profile-label">Role</span>
-                        <span class="profile-value">@profileAuth.User.FindFirstValue(ClaimTypes.Role)</span>
-                    </div>
+        @if (isLoading)
+        {
+            <p class="muted-text">Loading profile...</p>
+        }
+        else
+        {
+            @if (!string.IsNullOrWhiteSpace(statusMessage))
+            {
+                <div class="alert @(isError ? "alert-danger" : "alert-success")" role="alert">
+                    @statusMessage
                 </div>
-            </Authorized>
-        </AuthorizeView>
+            }
+
+            <EditForm Model="form" OnValidSubmit="SaveAsync" class="auth-form">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <section class="profile-form-section">
+                    <h2>Account Info</h2>
+
+                    <div class="profile-grid">
+                        <div class="profile-row">
+                            <span class="profile-label">Email</span>
+                            <span class="profile-value">@email</span>
+                        </div>
+                        <div class="profile-row">
+                            <span class="profile-label">Role</span>
+                            <span class="profile-value">@role</span>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="name" class="form-label">Name</label>
+                        <InputText id="name" class="form-control" @bind-Value="form.Name" />
+                        <ValidationMessage For="() => form.Name" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="bio" class="form-label">Bio</label>
+                        <InputTextArea id="bio" class="form-control" rows="5" @bind-Value="form.Bio" />
+                        <ValidationMessage For="() => form.Bio" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="location" class="form-label">Location</label>
+                        <InputText id="location" class="form-control" @bind-Value="form.Location" />
+                        <ValidationMessage For="() => form.Location" />
+                    </div>
+                </section>
+
+                @if (isHandyman)
+                {
+                    <section class="profile-form-section">
+                        <h2>Professional Info</h2>
+
+                        <div class="form-field">
+                            <label for="skills" class="form-label">Skills</label>
+                            <InputText id="skills" class="form-control" @bind-Value="form.Skills" />
+                            <div class="form-text">Example: Plumbing, drywall, appliance repair</div>
+                            <ValidationMessage For="() => form.Skills" />
+                        </div>
+
+                        <div class="profile-grid">
+                            <div class="profile-row">
+                                <span class="profile-label">Rank</span>
+                                <span class="profile-value">@rank</span>
+                            </div>
+                            <div class="profile-row">
+                                <span class="profile-label">XP</span>
+                                <span class="profile-value">@xp</span>
+                            </div>
+                        </div>
+                    </section>
+                }
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                        @(isSaving ? "Saving..." : "Save Profile")
+                    </button>
+                </div>
+            </EditForm>
+        }
     </div>
 </section>
+
+@code {
+    private readonly ProfileForm form = new();
+    private int userId;
+    private string email = string.Empty;
+    private string role = string.Empty;
+    private string rank = "New";
+    private int xp;
+    private bool isHandyman;
+    private bool isLoading = true;
+    private bool isSaving;
+    private bool isError;
+    private string? statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if (!TryGetUserId(authState.User, out userId))
+        {
+            isError = true;
+            statusMessage = "Could not load your account.";
+            isLoading = false;
+            return;
+        }
+
+        var user = await Db.Users
+            .Include(user => user.HandymanProfile)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.Id == userId);
+
+        if (user is null)
+        {
+            isError = true;
+            statusMessage = "Could not load your profile.";
+            isLoading = false;
+            return;
+        }
+
+        email = user.Email;
+        role = user.Role.ToString();
+        isHandyman = user.Role == UserRole.Handyman;
+        form.RequireSkills = isHandyman;
+        form.Name = user.Name;
+        form.Bio = user.Bio;
+        form.Location = user.Location;
+
+        if (isHandyman)
+        {
+            form.Skills = user.HandymanProfile?.Skills ?? string.Empty;
+            rank = user.HandymanProfile?.Rank ?? "New";
+            xp = user.HandymanProfile?.XP ?? 0;
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SaveAsync()
+    {
+        isSaving = true;
+        isError = false;
+        statusMessage = null;
+
+        var user = await Db.Users
+            .Include(user => user.HandymanProfile)
+            .SingleOrDefaultAsync(user => user.Id == userId);
+
+        if (user is null)
+        {
+            isError = true;
+            statusMessage = "Could not save your profile.";
+            isSaving = false;
+            return;
+        }
+
+        user.Name = form.Name.Trim();
+        user.Bio = form.Bio.Trim();
+        user.Location = form.Location.Trim();
+
+        if (user.Role == UserRole.Handyman)
+        {
+            if (user.HandymanProfile is null)
+            {
+                user.HandymanProfile = new HandymanProfile
+                {
+                    UserId = user.Id
+                };
+
+                Db.HandymanProfiles.Add(user.HandymanProfile);
+            }
+
+            user.HandymanProfile.Skills = form.Skills.Trim();
+            rank = user.HandymanProfile.Rank;
+            xp = user.HandymanProfile.XP;
+        }
+
+        await Db.SaveChangesAsync();
+
+        statusMessage = "Profile saved.";
+        isSaving = false;
+    }
+
+    private static bool TryGetUserId(ClaimsPrincipal user, out int userId)
+    {
+        var userIdValue = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        return int.TryParse(userIdValue, out userId);
+    }
+
+    private sealed class ProfileForm : IValidatableObject
+    {
+        [Required]
+        [StringLength(User.MaxNameLength)]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(User.MaxBioLength)]
+        public string Bio { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(User.MaxLocationLength)]
+        public string Location { get; set; } = string.Empty;
+
+        [StringLength(HandymanProfile.MaxSkillsLength)]
+        public string Skills { get; set; } = string.Empty;
+
+        public bool RequireSkills { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (RequireSkills && string.IsNullOrWhiteSpace(Skills))
+            {
+                yield return new ValidationResult(
+                    "Skills is required.",
+                    [nameof(Skills)]);
+            }
+        }
+    }
+}
