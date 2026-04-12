@@ -235,8 +235,8 @@ public static class AuthEndpoints
         }
 
         return role == UserRole.Handyman
-            ? "/professional/servicos-disponiveis"
-            : "/customer/meus-servicos";
+            ? "/professional/services"
+            : "/customer/services";
     }
 
     private static bool IsSafeLocalUrl(string url)

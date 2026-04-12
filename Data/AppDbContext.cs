@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<HandymanProfile> HandymanProfiles => Set<HandymanProfile>();
+    public DbSet<ServiceRequest> ServiceRequests { get; set; }
+    public DbSet<ServiceCategory> ServiceCategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,5 +60,11 @@ public class AppDbContext : DbContext
                 .HasForeignKey<HandymanProfile>(profile => profile.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        modelBuilder.Entity<ServiceCategory>().HasData(
+            new ServiceCategory { Id = 1, Name = "Electrical" },
+            new ServiceCategory { Id = 2, Name = "Plumbing" },
+            new ServiceCategory { Id = 3, Name = "Painting" }
+        );
     }
 }

@@ -14,14 +14,14 @@
                 <div class="button-row">
                     <AuthorizeView Roles="Customer">
                         <Authorized Context="customerAuth">
-                            <a class="btn btn-primary" href="/customer/meus-servicos">View My Services</a>
+                            <a class="btn btn-primary" href="/customer/services">View My Services</a>
                             <a class="btn btn-outline-primary" href="/customer/criar-servico">Create Service</a>
                         </Authorized>
                     </AuthorizeView>
 
                     <AuthorizeView Roles="Handyman">
                         <Authorized Context="handymanAuth">
-                            <a class="btn btn-primary" href="/professional/servicos-disponiveis">Browse Available Jobs</a>
+                            <a class="btn btn-primary" href="/professional/services">Browse Available Jobs</a>
                         </Authorized>
                     </AuthorizeView>
                 </div>

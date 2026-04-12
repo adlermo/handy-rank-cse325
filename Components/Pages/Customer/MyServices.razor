@@ -1,5 +1,7 @@
-@page "/customer/meus-servicos"
+@page "/customer/services"
+@using HandyRank.Features.ServiceRequests.Services
 @attribute [Authorize(Roles = "Customer")]
+@inject ServiceRequestService Service
 
 <section class="page-section">
     <div class="page-header">
@@ -9,12 +11,35 @@
     </div>
 
     <div class="button-row">
-        <a class="btn btn-primary" href="/customer/criar-servico">Create Service</a>
+        <a class="btn btn-primary" href="/customer/services/create">Create Service</a>
     </div>
 
-    <div class="card empty-state">
-        <span class="status-pill">No services yet</span>
-        <h2>Your service list is empty</h2>
-        <p class="muted-text">Create your first request when you are ready to hire help.</p>
-    </div>
+
+    @if (requests == null)
+    {
+        <p>Loading...</p>
+        <div class="card empty-state">
+            <span class="status-pill">No services yet</span>
+            <h2>Your service list is empty</h2>
+            <p class="muted-text">Create your first request when you are ready to hire help.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var r in requests)
+        {
+            <div>
+                <strong>@r.Title</strong> - @r.Category?.Name - @r.Status
+            </div>
+        }
+    }
 </section>
+
+@code {
+    List<ServiceRequest> requests = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        requests = await Service.GetCustomerRequests();
+    }
+}
