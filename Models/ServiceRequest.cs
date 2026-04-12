@@ -14,7 +14,9 @@ public class ServiceRequest
     public int CustomerId { get; set; }
     public User? Customer { get; set; }
 
+    public int? ProfessionalId { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public string Status { get; set; } = "Open";
+    public ServiceRequestStatus Status { get; set; } = ServiceRequestStatus.Open;
 }

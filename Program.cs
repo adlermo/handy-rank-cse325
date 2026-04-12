@@ -6,6 +6,9 @@ using HandyRank.Endpoints;
 using HandyRank.Models;
 using HandyRank.Components;
 using Npgsql;
+using HandyRank.Features.ServiceRequests.Services;
+using HandyRank.Features.Marketplace.Services;
+using HandyRank.Domain.Categories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +53,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 builder.Services.AddAuthorization();
+
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<ServiceRequestService>();
+builder.Services.AddScoped<CustomerRequestService>();
+builder.Services.AddScoped<JobDiscoveryService>();
+builder.Services.AddScoped<CategoryService>();
 
 if (!builder.Environment.IsEnvironment("Testing"))
 {
@@ -63,11 +71,9 @@ if (!builder.Environment.IsEnvironment("Testing"))
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 app.UseWhen(

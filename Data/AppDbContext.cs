@@ -9,7 +9,6 @@ public class AppDbContext : DbContext
         : base(options) { }
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<Job> Jobs => Set<Job>();
     public DbSet<HandymanProfile> HandymanProfiles => Set<HandymanProfile>();
     public DbSet<ServiceRequest> ServiceRequests { get; set; }
     public DbSet<ServiceCategory> ServiceCategories { get; set; }
@@ -40,9 +39,20 @@ public class AppDbContext : DbContext
                 .HasConversion<string>();
         });
 
-        modelBuilder.Entity<Job>()
-            .Property(job => job.Status)
-            .HasConversion<string>();
+        modelBuilder.Entity<ServiceRequest>(entity =>
+        {
+            entity.HasIndex(r => r.CustomerId);
+            entity.HasIndex(r => r.Status);
+            entity.HasOne(r => r.Category)
+                .WithMany()
+                .HasForeignKey(r => r.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(r => r.Customer)
+                .WithMany()
+                .HasForeignKey(r => r.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
         modelBuilder.Entity<HandymanProfile>(entity =>
         {
