@@ -1,16 +1,59 @@
 @page "/professional/services"
 @attribute [Authorize(Roles = "Handyman")]
 
+@using HandyRank.Components.Shared
+@using HandyRank.Features.Marketplace.Services
+@inject JobDiscoveryService Jobs
+
 <section class="page-section">
     <div class="page-header">
         <p class="page-eyebrow">Handyman workspace</p>
         <h1>Available Jobs</h1>
-        <p class="page-description">Review open customer requests and accept jobs that match your skills.</p>
+        <p class="page-description">
+            Review open customer requests and accept jobs that match your skills.
+        </p>
     </div>
 
-    <div class="card empty-state">
-        <span class="status-pill">No open jobs</span>
-        <h2>Nothing available right now</h2>
-        <p class="muted-text">New customer requests will appear here when the marketplace has active jobs.</p>
-    </div>
+    @if (!jobs.Any())
+    {
+        <div class="card empty-state">
+            <span class="status-pill">No open jobs</span>
+            <h2>Nothing available right now</h2>
+            <p class="muted-text">
+                New customer requests will appear here when the marketplace has active jobs.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="service-list">
+            @foreach (var job in jobs)
+            {
+                <ServiceCard Request="job" IsCustomer="false" OnAccept="AcceptJob" />
+            }
+        </div>
+    }
 </section>
+
+@code {
+    List<ServiceRequest> jobs = new();
+
+    bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        jobs = await Jobs.GetAvailableJobs();
+    }
+
+    async Task AcceptJob(int id)
+    {
+        if (loading) return;
+
+        loading = true;
+
+        await Jobs.AcceptJob(id);
+        jobs = await Jobs.GetAvailableJobs();
+
+        loading = false;
+    }
+}

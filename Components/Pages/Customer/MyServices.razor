@@ -1,23 +1,21 @@
 @page "/customer/services"
+@using HandyRank.Components.Shared
 @using HandyRank.Features.ServiceRequests.Services
 @attribute [Authorize(Roles = "Customer")]
-@inject ServiceRequestService Service
+@inject CustomerRequestService Service
 
 <section class="page-section">
     <div class="page-header">
         <p class="page-eyebrow">Customer workspace</p>
-        <h1>My Services</h1>
+        <h1>My Service Requests</h1>
         <p class="page-description">Track service requests from draft to completion.</p>
+        <span class="page-action">
+            <a class="btn btn-primary" href="/customer/services/create">Create Service</a>
+        </span>
     </div>
 
-    <div class="button-row">
-        <a class="btn btn-primary" href="/customer/services/create">Create Service</a>
-    </div>
-
-
-    @if (requests == null)
+    @if (!requests.Any())
     {
-        <p>Loading...</p>
         <div class="card empty-state">
             <span class="status-pill">No services yet</span>
             <h2>Your service list is empty</h2>
@@ -26,20 +24,66 @@
     }
     else
     {
-        @foreach (var r in requests)
-        {
-            <div>
-                <strong>@r.Title</strong> - @r.Category?.Name - @r.Status
+        <div class="service-list">
+            @foreach (var r in requests)
+            {
+                <ServiceCard Request="r" IsCustomer="true" OnDelete="ConfirmDelete" />
+            }
+        </div>
+    }
+
+    @if (deletingId != null)
+    {
+        <div class="modal-backdrop">
+            <div class="modal">
+                <h3>Delete this request?</h3>
+                <p>This action cannot be undone.</p>
+
+                <div class="modal-actions">
+                    <button class="btn btn-danger" @onclick="Delete">Delete</button>
+                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                </div>
             </div>
-        }
+        </div>
     }
 </section>
 
 @code {
     List<ServiceRequest> requests = new();
 
+    int? deletingId = null;
+
     protected override async Task OnInitializedAsync()
     {
-        requests = await Service.GetCustomerRequests();
+        requests = await Service.GetMyRequests();
+    }
+
+    async Task Delete()
+    {
+        if (deletingId is null) return;
+
+        await Service.Delete(deletingId.Value);
+
+        requests = await Service.GetMyRequests();
+
+        deletingId = null;
+    }
+
+    string GetStatusClass(string status) => status switch
+    {
+        "Open" => "status-open",
+        "Pending" => "status-inprogress",
+        "Completed" => "status-completed",
+        _ => ""
+    };
+
+    void ConfirmDelete(int id)
+    {
+        deletingId = id;
+    }
+
+    void CancelDelete()
+    {
+        deletingId = null;
     }
 }

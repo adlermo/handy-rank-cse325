@@ -1,8 +1,9 @@
 @page "/customer/services/create"
+@using System.ComponentModel.DataAnnotations
 @using HandyRank.Domain.Categories
 @using HandyRank.Features.ServiceRequests.Services
 @attribute [Authorize(Roles = "Customer")]
-@inject ServiceRequestService Service
+@inject CustomerRequestService Service
 @inject CategoryService CategoryService
 @inject NavigationManager Navigation
 
@@ -10,41 +11,45 @@
     <div class="page-header">
         <p class="page-eyebrow">New request</p>
         <h1>Create Service</h1>
-        <p class="page-description">This layout is ready for the service creation flow.</p>
+        <p class="page-description">Describe what you need and we’ll find the right pro.</p>
     </div>
 
-    <EditForm Model="request" OnValidSubmit="HandleSubmit" FormName="createRequest">
+    <EditForm Model="form" OnValidSubmit="HandleSubmit" FormName="createRequest">
         <DataAnnotationsValidator />
-        <ValidationSummary />
+
         <div class="card panel">
             <div class="auth-form">
-
                 <div class="form-field">
                     <label class="form-label" for="title">Service title</label>
-                    <InputText id="title" class="form-control" type="text" placeholder="Example: Fix kitchen sink"
-                               @bind-Value="request.Title" />
+                    <InputText id="title" class="form-control" placeholder="Example: Fix kitchen sink"
+                               @bind-Value="form.Title" />
+                    <ValidationMessage For="() => form.Title" />
                 </div>
 
                 <div class="form-field">
                     <label class="form-label" for="description">Description</label>
                     <InputTextArea id="description" class="form-control" rows="4" placeholder="Details will go here."
-                                   @bind-Value="request.Description">
-                    </InputTextArea>
+                                   @bind-Value="form.Description" />
+                    <ValidationMessage For="() => form.Description" />
                 </div>
 
                 <div class="form-field">
                     <label class="form-label">Location</label>
-                    <InputText id="location" class="form-control" @bind-Value="request.Location" />
+                    <InputText class="form-control" @bind-Value="form.Location" />
+                    <ValidationMessage For="() => form.Location" />
                 </div>
 
                 <div class="form-field">
                     <label class="form-label">Category</label>
-                    <InputSelect TValue="int" class="form-control" @bind-Value="request.CategoryId">
+                    <InputSelect TValue="int" class="form-control" @bind-Value="form.CategoryId">
+                        <option value="0">Select a category</option>
+
                         @foreach (var c in categories)
                         {
-                            <option @key="c.Id" value="@(c.Id)">@c.Name</option>
+                            <option value="@c.Id">@c.Name</option>
                         }
                     </InputSelect>
+                    <ValidationMessage For="() => form.CategoryId" />
                 </div>
 
             </div>
@@ -64,18 +69,42 @@
 </section>
 
 @code {
-    CreateServiceRequestDto request = new();
-    List<ServiceCategory> categories = new();
+    private readonly CreateServiceForm form = new();
+    private List<ServiceCategory> categories = new();
 
     protected override async Task OnInitializedAsync()
     {
         categories = await CategoryService.GetAll();
     }
 
-    async Task HandleSubmit()
+    private async Task HandleSubmit()
     {
-        Console.WriteLine($"CategoryId Form: {request.CategoryId}");
-        await Service.CreateCustomerRequest(request);
+        await Service.Create(new CreateServiceRequestDto
+        {
+            Title = form.Title,
+            Description = form.Description,
+            Location = form.Location,
+            CategoryId = form.CategoryId
+        });
+
         Navigation.NavigateTo("/customer/services");
+    }
+
+    private class CreateServiceForm
+    {
+        [Required]
+        [StringLength(100, MinimumLength = 5)]
+        public string Title { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(1000, MinimumLength = 10)]
+        public string Description { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(200)]
+        public string Location { get; set; } = string.Empty;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a category.")]
+        public int CategoryId { get; set; }
     }
 }

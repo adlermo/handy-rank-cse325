@@ -156,8 +156,8 @@ public sealed class ProfileEndpointsTests : IClassFixture<HandyRankWebApplicatio
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
 
         var expectedRedirect = role == UserRole.Handyman
-            ? "/professional/servicos-disponiveis"
-            : "/customer/meus-servicos";
+            ? "/professional/services"
+            : "/customer/services";
 
         Assert.Equal(expectedRedirect, response.Headers.Location?.OriginalString);
     }

@@ -13,7 +13,6 @@ public class CategoryService
         _db = db;
     }
 
-    // 🔍 GET ALL (dropdown, filters, etc)
     public async Task<List<ServiceCategory>> GetAll()
     {
         return await _db.ServiceCategories
@@ -21,14 +20,12 @@ public class CategoryService
             .ToListAsync();
     }
 
-    // 🔎 GET BY ID (futuro: validações, matching, etc)
     public async Task<ServiceCategory?> GetById(int id)
     {
         return await _db.ServiceCategories
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    // 🧠 VALIDATION (útil pro CreateRequest)
     public async Task<bool> Exists(int id)
     {
         return await _db.ServiceCategories

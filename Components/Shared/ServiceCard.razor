@@ -1,0 +1,55 @@
+@using HandyRank.Data
+
+<div class="service-card">
+    <div class="service-header">
+        <h3 class="title">@Request.Title</h3>
+        <span class="status @GetStatusClass(Request.Status)">
+            @Request.Status
+        </span>
+    </div>
+
+    <p class="service-description">
+        @Request.Description
+    </p>
+
+    <div class="service-meta">
+        <span>🔧 @Request.Category?.Name</span>
+        <span>📍 @Request.Location</span>
+    </div>
+
+    <div class="service-footer">
+        <small>Created @Request.CreatedAt.ToString("MMM dd")</small>
+        <div class="actions">
+            @if (IsCustomer)
+            {
+                <button class="btn-icon" @onclick="() => OnDelete.InvokeAsync(Request.Id)">🗑️</button>
+                <button class="btn-icon">✏️</button>
+            }
+            else
+            {
+                <button class="btn btn-primary" @onclick="() => OnAccept.InvokeAsync(Request.Id)">
+                    Accept
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public ServiceRequest Request { get; set; } = default!;
+
+    [Parameter] public bool IsCustomer { get; set; }
+
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+
+    [Parameter] public EventCallback<int> OnAccept { get; set; }
+
+    string GetStatusClass(ServiceRequestStatus status) => status switch
+    {
+        ServiceRequestStatus.Open => "status-open",
+        ServiceRequestStatus.Pending => "status-inprogress",
+        ServiceRequestStatus.Completed => "status-completed",
+        ServiceRequestStatus.Cancelled => "status-cancelled",
+        _ => ""
+    };
+}

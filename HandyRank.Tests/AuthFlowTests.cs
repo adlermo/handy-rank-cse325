@@ -31,7 +31,7 @@ public sealed class AuthFlowTests : IClassFixture<HandyRankWebApplicationFactory
             ("role", "Customer")));
 
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-        Assert.Equal("/customer/meus-servicos", response.Headers.Location?.OriginalString);
+        Assert.Equal("/customer/services", response.Headers.Location?.OriginalString);
 
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -41,7 +41,7 @@ public sealed class AuthFlowTests : IClassFixture<HandyRankWebApplicationFactory
         Assert.NotEqual("Password123!", user.PasswordHash);
         Assert.NotEmpty(user.PasswordHash);
 
-        var protectedPage = await client.GetAsync("/customer/meus-servicos");
+        var protectedPage = await client.GetAsync("/customer/services");
         Assert.Equal(HttpStatusCode.OK, protectedPage.StatusCode);
     }
 
@@ -83,9 +83,9 @@ public sealed class AuthFlowTests : IClassFixture<HandyRankWebApplicationFactory
             ("password", "Password123!")));
 
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-        Assert.Equal("/professional/servicos-disponiveis", response.Headers.Location?.OriginalString);
+        Assert.Equal("/professional/services", response.Headers.Location?.OriginalString);
 
-        var protectedPage = await client.GetAsync("/professional/servicos-disponiveis");
+        var protectedPage = await client.GetAsync("/professional/services");
         Assert.Equal(HttpStatusCode.OK, protectedPage.StatusCode);
     }
 
@@ -118,7 +118,7 @@ public sealed class AuthFlowTests : IClassFixture<HandyRankWebApplicationFactory
             ("password", "Password123!"),
             ("role", "Customer")));
 
-        var response = await client.GetAsync("/professional/servicos-disponiveis");
+        var response = await client.GetAsync("/professional/services");
 
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal("/access-denied", response.Headers.Location?.AbsolutePath);
@@ -142,7 +142,7 @@ public sealed class AuthFlowTests : IClassFixture<HandyRankWebApplicationFactory
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal("/login?message=logged-out", response.Headers.Location?.OriginalString);
 
-        var protectedPage = await client.GetAsync("/customer/meus-servicos");
+        var protectedPage = await client.GetAsync("/customer/services");
 
         Assert.Equal(HttpStatusCode.Redirect, protectedPage.StatusCode);
         Assert.Equal("/login", protectedPage.Headers.Location?.AbsolutePath);
