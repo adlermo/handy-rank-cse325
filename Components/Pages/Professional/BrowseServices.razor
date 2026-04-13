@@ -14,35 +14,54 @@
         </p>
     </div>
 
-    @if (!jobs.Any())
-    {
-        <div class="card empty-state">
-            <span class="status-pill">No open jobs</span>
-            <h2>Nothing available right now</h2>
-            <p class="muted-text">
-                New customer requests will appear here when the marketplace has active jobs.
-            </p>
-        </div>
-    }
-    else
-    {
-        <div class="service-list">
-            @foreach (var job in jobs)
+
+    @* Tab switcher for open jobs vs my accepted jobs *@
+    <div class="tabs">
+        <button class='tab @(activeTab == "open" ? "active" : "")' @onclick='() => SetTab("open")'>
+            Open Jobs
+        </button>
+
+        <button class='tab @(activeTab == "my" ? "active" : "")' @onclick='() => SetTab("my")'>
+            My Jobs
+        </button>
+    </div>
+
+    <div class="service-list">
+        @if (activeTab == "open")
+        {
+            @foreach (ServiceRequest job in openJobs)
             {
                 <ServiceCard Request="job" IsCustomer="false" OnAccept="AcceptJob" />
             }
-        </div>
-    }
+        }
+        else if (activeTab == "my")
+        {
+            @foreach (ServiceRequest job in myJobs)
+            {
+                <ServiceCard Request="job" IsCustomer="false" />
+            }
+        }
+    </div>
+
 </section>
 
 @code {
-    List<ServiceRequest> jobs = new();
-
     bool loading = false;
+
+    string activeTab = "open";
+
+    List<ServiceRequest> openJobs = new();
+    List<ServiceRequest> myJobs = new();
 
     protected override async Task OnInitializedAsync()
     {
-        jobs = await Jobs.GetAvailableJobs();
+        await LoadJobs();
+    }
+
+    async Task LoadJobs()
+    {
+        openJobs = await Jobs.GetAvailableJobs();
+        myJobs = await Jobs.GetMyJobs();
     }
 
     async Task AcceptJob(int id)
@@ -52,8 +71,14 @@
         loading = true;
 
         await Jobs.AcceptJob(id);
-        jobs = await Jobs.GetAvailableJobs();
+        openJobs = await Jobs.GetAvailableJobs();
+        myJobs = await Jobs.GetMyJobs();
 
         loading = false;
+    }
+
+    void SetTab(string tab)
+    {
+        activeTab = tab;
     }
 }

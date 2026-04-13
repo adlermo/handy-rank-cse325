@@ -44,6 +44,17 @@ public class JobDiscoveryService
             .ToListAsync();
     }
 
+    public async Task<List<ServiceRequest>> GetMyJobs()
+    {
+        var userId = await GetUserId();
+
+        return await _db.ServiceRequests
+            .Include(r => r.Category)
+            .Where(r => r.ProfessionalId == userId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+    }
+
     public async Task AcceptJob(int requestId)
     {
         var userId = await GetUserId();

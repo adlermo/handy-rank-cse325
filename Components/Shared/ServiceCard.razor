@@ -37,7 +37,8 @@
             }
             else
             {
-                <button class="btn btn-primary" @onclick="() => OnAccept.InvokeAsync(Request.Id)">
+                <button class="btn btn-primary" @onclick="() => OnAccept.InvokeAsync(Request.Id)"
+                        hidden="@(Request.Status != ServiceRequestStatus.Open)">
                     Apply
                 </button>
             }
