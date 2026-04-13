@@ -1,4 +1,4 @@
-@page "/professional/avaliar-cliente/{id:int}"
+@page "/professional/services/{id:int}/review"
 @attribute [Authorize(Roles = "Handyman")]
 
 <section class="narrow-page page-section">
@@ -6,6 +6,6 @@
         <p class="page-eyebrow">Review</p>
         <h1>Review Customer</h1>
         <p class="page-description">Handyman feedback will be added after completed services are available.</p>
-        <a class="btn btn-outline-primary" href="/professional/servicos-disponiveis">Back to available jobs</a>
+        <a class="btn btn-outline-primary" href="/professional/services">Back to all jobs</a>
     </div>
 </section>

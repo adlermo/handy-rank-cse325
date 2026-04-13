@@ -1,4 +1,4 @@
-@page "/customer/avaliar-profissional/{id:int}"
+@page "/customer/services/{id:int}/review"
 @attribute [Authorize(Roles = "Customer")]
 
 <section class="narrow-page page-section">
@@ -6,6 +6,6 @@
         <p class="page-eyebrow">Review</p>
         <h1>Review Professional</h1>
         <p class="page-description">Customer feedback will be added after completed services are available.</p>
-        <a class="btn btn-outline-primary" href="/customer/meus-servicos">Back to services</a>
+        <a class="btn btn-outline-primary" href="/customer/services">Back to services</a>
     </div>
 </section>

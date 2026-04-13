@@ -1,11 +1,11 @@
-@page "/professional/aceitar-servico/{id:int}"
+@page "/professional/services/{id:int}"
 @attribute [Authorize(Roles = "Handyman")]
 
 <section class="narrow-page page-section">
     <div class="card panel">
-        <p class="page-eyebrow">Accept job</p>
-        <h1>Accept Service</h1>
+        <p class="page-eyebrow">Job Details</p>
+        <h1>Service Request</h1>
         <p class="page-description">Job acceptance details will appear here once service records are connected.</p>
-        <a class="btn btn-outline-primary" href="/professional/servicos-disponiveis">Back to available jobs</a>
+        <a class="btn btn-outline-primary" href="/professional/services">Back to all jobs</a>
     </div>
 </section>
