@@ -8,10 +8,11 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options) { }
 
-    public DbSet<User> Users => Set<User>();
     public DbSet<HandymanProfile> HandymanProfiles => Set<HandymanProfile>();
+    public DbSet<JobApplication> JobApplications { get; set; }
     public DbSet<ServiceRequest> ServiceRequests { get; set; }
     public DbSet<ServiceCategory> ServiceCategories { get; set; }
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,6 +55,12 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<ServiceCategory>().HasData(
+            new ServiceCategory { Id = 1, Name = "Electrical" },
+            new ServiceCategory { Id = 2, Name = "Plumbing" },
+            new ServiceCategory { Id = 3, Name = "Painting" }
+        );
+
         modelBuilder.Entity<HandymanProfile>(entity =>
         {
             entity.HasIndex(profile => profile.UserId)
@@ -71,10 +78,20 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<ServiceCategory>().HasData(
-            new ServiceCategory { Id = 1, Name = "Electrical" },
-            new ServiceCategory { Id = 2, Name = "Plumbing" },
-            new ServiceCategory { Id = 3, Name = "Painting" }
-        );
+        modelBuilder.Entity<JobApplication>(entity =>
+        {
+            entity.HasIndex(a => new { a.ServiceRequestId, a.ProfessionalId })
+                .IsUnique();
+
+            entity.HasOne(a => a.ServiceRequest)
+                .WithMany()
+                .HasForeignKey(a => a.ServiceRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(a => a.Professional)
+                .WithMany()
+                .HasForeignKey(a => a.ProfessionalId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
     }
 }

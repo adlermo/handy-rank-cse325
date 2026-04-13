@@ -15,6 +15,7 @@ public class ServiceRequest
     public User? Customer { get; set; }
 
     public int? ProfessionalId { get; set; }
+    public User? Professional { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -102,6 +102,33 @@ namespace HandyRank.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("JobApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProfessionalId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceRequestId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfessionalId");
+
+                    b.HasIndex("ServiceRequestId", "ProfessionalId")
+                        .IsUnique();
+
+                    b.ToTable("JobApplications");
+                });
+
             modelBuilder.Entity("ServiceCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -177,6 +204,8 @@ namespace HandyRank.Migrations
 
                     b.HasIndex("CustomerId");
 
+                    b.HasIndex("ProfessionalId");
+
                     b.HasIndex("Status");
 
                     b.ToTable("ServiceRequests");
@@ -193,6 +222,25 @@ namespace HandyRank.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("JobApplication", b =>
+                {
+                    b.HasOne("HandyRank.Models.User", "Professional")
+                        .WithMany()
+                        .HasForeignKey("ProfessionalId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("ServiceRequest", "ServiceRequest")
+                        .WithMany()
+                        .HasForeignKey("ServiceRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Professional");
+
+                    b.Navigation("ServiceRequest");
+                });
+
             modelBuilder.Entity("ServiceRequest", b =>
                 {
                     b.HasOne("ServiceCategory", "Category")
@@ -207,9 +255,15 @@ namespace HandyRank.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HandyRank.Models.User", "Professional")
+                        .WithMany()
+                        .HasForeignKey("ProfessionalId");
+
                     b.Navigation("Category");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Professional");
                 });
 
             modelBuilder.Entity("HandyRank.Models.User", b =>

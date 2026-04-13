@@ -1,4 +1,5 @@
 using HandyRank.Data;
+using HandyRank.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -80,6 +81,45 @@ public class CustomerRequestService
             throw new Exception("Request not found");
 
         _db.ServiceRequests.Remove(request);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<ServiceRequest> GetById(int id)
+    {
+        return await _db.ServiceRequests
+            .Include(r => r.Category)
+            .Include(r => r.Professional)
+            .FirstAsync(r => r.Id == id);
+    }
+
+    public async Task<List<User>> GetApplicants(int requestId)
+    {
+        return await _db.JobApplications
+            .Where(a => a.ServiceRequestId == requestId)
+            .Include(a => a.Professional)
+            .Select(a => a.Professional)
+            .ToListAsync();
+    }
+
+    public async Task SelectProfessional(int requestId, int proId)
+    {
+        var request = await _db.ServiceRequests.FindAsync(requestId);
+
+        if (request == null)
+            throw new Exception("Service request not found");
+
+        request.ProfessionalId = proId;
+        request.Status = ServiceRequestStatus.Pending;
+
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task MarkCompleted(int requestId)
+    {
+        var request = await _db.ServiceRequests.FindAsync(requestId);
+
+        request.Status = ServiceRequestStatus.Completed;
+
         await _db.SaveChangesAsync();
     }
 }

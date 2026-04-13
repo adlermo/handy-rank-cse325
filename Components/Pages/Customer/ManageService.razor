@@ -1,11 +1,103 @@
 @page "/customer/services/{id:int}"
+@using HandyRank.Features.ServiceRequests.Services
+@using HandyRank.Models
 @attribute [Authorize(Roles = "Customer")]
+@inject CustomerRequestService Service
 
 <section class="narrow-page page-section">
     <div class="card panel">
         <p class="page-eyebrow">Service completion</p>
         <h1>Complete Service</h1>
-        <p class="page-description">Completion actions will appear here once service details are connected.</p>
+
+        @if (request is not null)
+        {
+            <h2>@request.Title</h2>
+            <p class="page-description">@request.Description</p>
+
+            <div class="meta">
+                <span>🔧 @request.Category?.Name</span>
+                <span>📍 @request.Location</span>
+                <span class="status">@request.Status</span>
+            </div>
+        
+            @if (applicants.Any())
+            {
+                <h3>Applicants</h3>
+
+                @foreach (User pro in applicants)
+                {
+                    <div class="applicant-card">
+                        <div>
+                            <strong>@pro.Name</strong>
+                            <p>@pro.Bio</p>
+                            <small>@pro.HandymanProfile!.Skills</small>
+                        </div>
+
+                        <button class="btn btn-primary" @onclick="() => SelectProfessional(pro.Id)">
+                            Select
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No professionals applied yet</p>
+            }
+
+        
+            @if (request.Professional != null)
+            {
+                <div class="selected-pro">
+                    <h3>Assigned Professional</h3>
+                    <p>@request.Professional.Name</p>
+                </div>
+            }
+
+            @if (request.Status == ServiceRequestStatus.Open)
+            {
+                <p>Waiting for professionals...</p>
+            }
+            else if (request.Status == ServiceRequestStatus.Pending)
+            {
+                <button class="btn btn-success" @onclick="MarkCompleted">
+                    Mark as Completed
+                </button>
+            }
+            else if (request.Status == ServiceRequestStatus.Completed)
+            {
+                <a class="btn btn-outline-primary" href="/customer/review-professional/@request.Id">
+                    Leave Review
+                </a>
+            }
+        }
+        
         <a class="btn btn-outline-primary" href="/customer/services">Back to services</a>
     </div>
 </section>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    ServiceRequest? request;
+    List<User> applicants = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        request = await Service.GetById(Id);
+        applicants = await Service.GetApplicants(Id);
+    }
+
+    async Task SelectProfessional(int proId)
+    {
+        await Service.SelectProfessional(Id, proId);
+
+        request = await Service.GetById(Id);
+        applicants = await Service.GetApplicants(Id);
+    }
+
+    async Task MarkCompleted()
+    {
+        await Service.MarkCompleted(Id);
+
+        request = await Service.GetById(Id);
+    }
+}

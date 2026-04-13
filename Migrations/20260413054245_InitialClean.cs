@@ -98,6 +98,38 @@ namespace HandyRank.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ServiceRequests_Users_ProfessionalId",
+                        column: x => x.ProfessionalId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobApplications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ServiceRequestId = table.Column<int>(type: "integer", nullable: false),
+                    ProfessionalId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobApplications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobApplications_ServiceRequests_ServiceRequestId",
+                        column: x => x.ServiceRequestId,
+                        principalTable: "ServiceRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_JobApplications_Users_ProfessionalId",
+                        column: x => x.ProfessionalId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.InsertData(
@@ -117,6 +149,17 @@ namespace HandyRank.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_JobApplications_ProfessionalId",
+                table: "JobApplications",
+                column: "ProfessionalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobApplications_ServiceRequestId_ProfessionalId",
+                table: "JobApplications",
+                columns: new[] { "ServiceRequestId", "ProfessionalId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ServiceRequests_CategoryId",
                 table: "ServiceRequests",
                 column: "CategoryId");
@@ -125,6 +168,11 @@ namespace HandyRank.Migrations
                 name: "IX_ServiceRequests_CustomerId",
                 table: "ServiceRequests",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceRequests_ProfessionalId",
+                table: "ServiceRequests",
+                column: "ProfessionalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ServiceRequests_Status",
@@ -143,6 +191,9 @@ namespace HandyRank.Migrations
         {
             migrationBuilder.DropTable(
                 name: "HandymanProfiles");
+
+            migrationBuilder.DropTable(
+                name: "JobApplications");
 
             migrationBuilder.DropTable(
                 name: "ServiceRequests");
