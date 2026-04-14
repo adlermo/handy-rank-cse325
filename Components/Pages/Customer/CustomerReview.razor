@@ -2,24 +2,51 @@
 @attribute [Authorize(Roles = "Customer")]
 
 <section class="narrow-page page-section">
-    <div class="card panel">
+    <div class="card panel review-card">
         <p class="page-eyebrow">Review</p>
-        <h1>Review Professional</h1>
-        
-        @foreach (var tag in AvailableTags)
-        {
-            <button class="tag @(SelectedTags.Contains(tag) ? "selected" : "")" @onclick="() => ToggleTag(tag)">
-                @tag
-            </button>
-        }
+        <h1>How was the service?</h1>
 
-        <a class="btn btn-outline-primary" href="/customer/services">Back to services</a>
+        <!-- Rating -->
+        <div class="rating">
+            @for (int i = 1; i <= 5; i++)
+            {
+                <span class="star @(i <= Rating ? "active" : "")" @onclick="() => SetRating(i)">
+                    ★
+                </span>
+            }
+        </div>
+
+        <!-- Tags -->
+        <p class="section-label">What stood out?</p>
+
+        <div class="tag-grid">
+            @foreach (var tag in AvailableTags)
+            {
+                <button class="tag @(SelectedTags.Contains(tag) ? "selected" : "")" @onclick="() => ToggleTag(tag)">
+                    @FormatTag(tag)
+                </button>
+            }
+        </div>
+
+        <!-- Comment -->
+        <textarea class="comment-box" placeholder="Optional comment..." @bind="Comment">
+        </textarea>
+
+        <button class="btn btn-primary submit-btn" @onclick="Submit">
+            Submit Review
+        </button>
+
+        <a class="btn btn-outline-primary" href="/customer/services">
+            Back to services
+        </a>
     </div>
 </section>
 
 @code {
     [Parameter] public int Id { get; set; }
-    public List<ReviewTag> Tags { get; set; } = new();
+
+    int Rating = 0;
+    string? Comment;
 
     List<ReviewTag> AvailableTags = Enum.GetValues<ReviewTag>().ToList();
     List<ReviewTag> SelectedTags = new();
@@ -30,5 +57,24 @@
             SelectedTags.Remove(tag);
         else
             SelectedTags.Add(tag);
+    }
+
+    void SetRating(int value)
+    {
+        Rating = value;
+    }
+
+    string FormatTag(ReviewTag tag)
+    {
+        return tag switch
+        {
+            ReviewTag.FastExecution => "Fast",
+            _ => tag.ToString()
+        };
+    }
+
+    void Submit()
+    {
+        // TODO: call API
     }
 }

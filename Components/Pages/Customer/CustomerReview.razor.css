@@ -1,0 +1,81 @@
+.review-card {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ⭐ Rating */
+.rating {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 2rem;
+  margin: 1rem 0 2rem;
+}
+
+.star {
+  cursor: pointer;
+  color: #ccc;
+  transition:
+    transform 0.1s ease,
+    color 0.2s;
+}
+
+.star:hover {
+  transform: scale(1.2);
+}
+
+.star.active {
+  color: #f5b301;
+}
+
+/* Tags */
+.section-label {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.tag-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.tag {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.tag.selected {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+/* Comment */
+.comment-box {
+  width: 100%;
+  min-height: 80px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 1rem;
+}
+
+/* Submit */
+.submit-btn {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
