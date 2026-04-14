@@ -6,17 +6,16 @@
         <p class="page-eyebrow">Review</p>
         <h1>How was the service?</h1>
 
-        <!-- Rating -->
         <div class="rating">
             @for (int i = 1; i <= 5; i++)
             {
-                <span class="star @(i <= Rating ? "active" : "")" @onclick="() => SetRating(i)">
+                var starValue = i;
+                <span class="star @(i <= Rating ? "active" : "")" @onclick="() => SetRating(starValue)">
                     ★
                 </span>
             }
         </div>
 
-        <!-- Tags -->
         <p class="section-label">What stood out?</p>
 
         <div class="tag-grid">
@@ -28,7 +27,6 @@
             }
         </div>
 
-        <!-- Comment -->
         <textarea class="comment-box" placeholder="Optional comment..." @bind="Comment">
         </textarea>
 

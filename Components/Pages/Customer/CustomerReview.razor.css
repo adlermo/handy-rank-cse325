@@ -1,5 +1,6 @@
 .review-card {
   max-width: 520px;
+  min-width: 320px;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -15,7 +16,7 @@
 
 .star {
   cursor: pointer;
-  color: #ccc;
+  color: var(--color-light-gray);
   transition:
     transform 0.1s ease,
     color 0.2s;
@@ -54,14 +55,14 @@
 }
 
 .tag:hover {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .tag.selected {
-  background: #007bff;
+  background: var(--color-primary);
   color: white;
-  border-color: #007bff;
+  border-color: var(--color-primary);
 }
 
 /* Comment */
