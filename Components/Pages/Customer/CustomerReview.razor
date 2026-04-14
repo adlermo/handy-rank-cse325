@@ -5,11 +5,30 @@
     <div class="card panel">
         <p class="page-eyebrow">Review</p>
         <h1>Review Professional</h1>
-        <p class="page-description">Customer feedback will be added after completed services are available.</p>
+        
+        @foreach (var tag in AvailableTags)
+        {
+            <button class="tag @(SelectedTags.Contains(tag) ? "selected" : "")" @onclick="() => ToggleTag(tag)">
+                @tag
+            </button>
+        }
+
         <a class="btn btn-outline-primary" href="/customer/services">Back to services</a>
     </div>
 </section>
 
 @code {
     [Parameter] public int Id { get; set; }
+    public List<ReviewTag> Tags { get; set; } = new();
+
+    List<ReviewTag> AvailableTags = Enum.GetValues<ReviewTag>().ToList();
+    List<ReviewTag> SelectedTags = new();
+
+    void ToggleTag(ReviewTag tag)
+    {
+        if (SelectedTags.Contains(tag))
+            SelectedTags.Remove(tag);
+        else
+            SelectedTags.Add(tag);
+    }
 }

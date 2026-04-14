@@ -13,6 +13,9 @@ public class AppDbContext : DbContext
     public DbSet<ServiceRequest> ServiceRequests { get; set; }
     public DbSet<ServiceCategory> ServiceCategories { get; set; }
     public DbSet<User> Users => Set<User>();
+    public DbSet<Review> Reviews { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<ReviewTagLink> ReviewTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -93,5 +96,18 @@ public class AppDbContext : DbContext
                 .HasForeignKey(a => a.ProfessionalId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
+
+        modelBuilder.Entity<ReviewTagLink>()
+            .HasKey(rt => new { rt.ReviewId, rt.TagId });
+
+        modelBuilder.Entity<ReviewTagLink>()
+            .HasOne<Review>()
+            .WithMany(r => r.ReviewTags)
+            .HasForeignKey(rt => rt.ReviewId);
+
+        modelBuilder.Entity<ReviewTagLink>()
+            .HasOne<Tag>()
+            .WithMany()
+            .HasForeignKey(rt => rt.TagId);
     }
 }
