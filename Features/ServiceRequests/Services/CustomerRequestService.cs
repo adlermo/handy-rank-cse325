@@ -154,4 +154,17 @@ public class CustomerRequestService
 
         await _db.SaveChangesAsync();
     }
+
+    public async Task<(ServiceRequest request, Review? review)> GetWithReview(int id)
+    {
+        var request = await _db.ServiceRequests
+            .Include(r => r.Category)
+            .Include(r => r.Professional)
+            .FirstAsync(r => r.Id == id);
+
+        var review = await _db.Reviews
+            .FirstOrDefaultAsync(r => r.ServiceRequestId == id);
+
+        return (request, review);
+    }
 }

@@ -1,5 +1,7 @@
 @page "/customer/services/{id:int}/review"
 @attribute [Authorize(Roles = "Customer")]
+@inject ReviewService ReviewService
+@inject NavigationManager Nav
 
 <section class="narrow-page page-section">
     <div class="card panel review-card">
@@ -71,8 +73,18 @@
         };
     }
 
-    void Submit()
+    async Task Submit()
     {
-        // TODO: call API
+        if (Rating == 0)
+            return;
+
+        await ReviewService.SubmitReview(
+            Id,
+            Rating,
+            SelectedTags.Select(t => (int)t).ToList(),
+            Comment
+        );
+
+        Nav.NavigateTo("/customer/services");
     }
 }

@@ -31,3 +31,39 @@
   font-size: 0.9rem;
   color: var(--color-secondary);
 }
+
+.review-display {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #f8f9fa;
+}
+
+.review-display .stars {
+  color: var(--color-light-gray);
+  font-size: 1.5rem;
+}
+
+.review-display .stars .active {
+  color: #f5b301;
+  font-size: 1.5rem;
+}
+
+.review-display .tags {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.review-display .tag {
+  background: var(--color-primary);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.review-display .comment {
+  font-style: italic;
+}

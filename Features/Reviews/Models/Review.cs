@@ -6,10 +6,9 @@ public class Review
     public int CustomerId { get; set; }
     public int ProfessionalId { get; set; }
 
-    public int Rating { get; set; } // 1–5
+    public int Rating { get; set; }
 
     public List<ReviewTag> Tags { get; set; } = new();
-    public List<ReviewTagLink> ReviewTags { get; set; } = new();
 
     public string? Comment { get; set; }
 

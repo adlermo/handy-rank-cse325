@@ -59,6 +59,7 @@ builder.Services.AddScoped<ServiceRequestService>();
 builder.Services.AddScoped<CustomerRequestService>();
 builder.Services.AddScoped<JobDiscoveryService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ReviewService>();
 
 if (!builder.Environment.IsEnvironment("Testing"))
 {
