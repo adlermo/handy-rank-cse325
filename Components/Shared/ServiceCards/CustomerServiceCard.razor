@@ -1,0 +1,30 @@
+<ServiceCardBase Title="@Request.Title" Description="@Request.Description" Category="@Request.Category?.Name"
+                 Location="@Request.Location" CreatedAt="@Request.CreatedAt" Status="@Request.Status.ToString()">
+
+    @if (confirmDeletion)
+    {
+        <div class="modal-actions">
+            <button class="btn btn-danger" @onclick="HandleDelete">Delete</button>
+            <button class="btn btn-secondary" @onclick="() => confirmDeletion = false">Cancel</button>
+        </div>
+    }
+    else
+    {
+        <a class="btn btn-icon" href="/customer/services/@Request.Id">👀</a>
+        <button class="btn-icon" @onclick="() => confirmDeletion = true">🗑️</button>
+    }
+
+</ServiceCardBase>
+
+@code {
+    [Parameter] public ServiceRequest Request { get; set; } = default!;
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+
+    bool confirmDeletion = false;
+
+    async Task HandleDelete()
+    {
+        confirmDeletion = false;
+        await OnDelete.InvokeAsync(Request.Id);
+    }
+}

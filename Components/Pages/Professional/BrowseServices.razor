@@ -2,6 +2,7 @@
 @attribute [Authorize(Roles = "Handyman")]
 
 @using HandyRank.Components.Shared
+@using HandyRank.Components.Shared.ServiceCards
 @using HandyRank.Features.Marketplace.Services
 @inject JobDiscoveryService Jobs
 
@@ -28,16 +29,16 @@
     <div class="service-list">
         @if (activeTab == "open")
         {
-            @foreach (ServiceRequest job in openJobs)
+            @foreach (var job in openJobs)
             {
-                <ServiceCard Request="job" IsCustomer="false" OnAccept="AcceptJob" />
+                <MarketplaceServiceCard Job="job" OnApply="ApplyToJob" />
             }
         }
         else if (activeTab == "my")
         {
-            @foreach (ServiceRequest job in myJobs)
+            @foreach (var job in myJobs)
             {
-                <ServiceCard Request="job" IsCustomer="false" />
+                <MarketplaceServiceCard Job="job" />
             }
         }
     </div>
@@ -49,8 +50,8 @@
 
     string activeTab = "open";
 
-    List<ServiceRequest> openJobs = new();
-    List<ServiceRequest> myJobs = new();
+    List<JobCardDto> openJobs = new();
+    List<JobCardDto> myJobs = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,13 +64,13 @@
         myJobs = await Jobs.GetMyJobs();
     }
 
-    async Task AcceptJob(int id)
+    async Task ApplyToJob(int id)
     {
         if (loading) return;
 
         loading = true;
 
-        await Jobs.AcceptJob(id);
+        await Jobs.ApplyToJob(id);
         openJobs = await Jobs.GetAvailableJobs();
         myJobs = await Jobs.GetMyJobs();
 

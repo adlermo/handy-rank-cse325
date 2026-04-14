@@ -33,18 +33,33 @@ public class JobDiscoveryService
         return int.Parse(id);
     }
 
-    public async Task<List<ServiceRequest>> GetAvailableJobs()
+    public async Task<List<JobCardDto>> GetAvailableJobs()
     {
+        var userId = await GetUserId();
+
+        var appliedIds = await _db.JobApplications
+    .Where(a => a.ProfessionalId == userId)
+    .Select(a => a.ServiceRequestId)
+    .ToListAsync();
+
         return await _db.ServiceRequests
             .Include(r => r.Category)
             .Where(r => r.Status == ServiceRequestStatus.Open)
-            // .Where(r => professionalCategories.Contains(r.CategoryId))
-            // .Where(r => r.Location == userLocation)
-            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new JobCardDto
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Description = r.Description,
+                Category = r.Category!.Name,
+                Location = r.Location,
+                CreatedAt = r.CreatedAt,
+                Status = r.Status,
+                HasApplied = appliedIds.Contains(r.Id)
+            })
             .ToListAsync();
     }
 
-    public async Task<List<ServiceRequest>> GetMyJobs()
+    public async Task<List<JobCardDto>> GetMyJobs()
     {
         var userId = await GetUserId();
 
@@ -52,10 +67,20 @@ public class JobDiscoveryService
             .Include(r => r.Category)
             .Where(r => r.ProfessionalId == userId)
             .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new JobCardDto
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Description = r.Description,
+                Category = r.Category!.Name,
+                Location = r.Location,
+                CreatedAt = r.CreatedAt,
+                Status = r.Status,
+            })
             .ToListAsync();
     }
 
-    public async Task AcceptJob(int requestId)
+    public async Task ApplyToJob(int requestId)
     {
         var userId = await GetUserId();
 
@@ -66,11 +91,23 @@ public class JobDiscoveryService
             throw new Exception("Job not found");
 
         if (job.Status != ServiceRequestStatus.Open)
-            throw new Exception("Job already taken");
+            throw new Exception("Job not open");
 
-        job.Status = ServiceRequestStatus.Pending;
-        job.ProfessionalId = userId;
+        var alreadyApplied = await _db.JobApplications
+            .AnyAsync(a => a.ServiceRequestId == requestId && a.ProfessionalId == userId);
 
+        if (alreadyApplied)
+            throw new Exception("Already applied");
+
+        var application = new JobApplication
+        {
+            ServiceRequestId = requestId,
+            ProfessionalId = userId,
+            CreatedAt = DateTime.UtcNow,
+            Status = JobApplicationStatus.Pending
+        };
+
+        _db.JobApplications.Add(application);
         await _db.SaveChangesAsync();
     }
 }

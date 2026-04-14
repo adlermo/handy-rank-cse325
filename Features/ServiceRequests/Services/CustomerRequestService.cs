@@ -92,24 +92,53 @@ public class CustomerRequestService
             .FirstAsync(r => r.Id == id);
     }
 
-    public async Task<List<User>> GetApplicants(int requestId)
+    public async Task<List<ApplicantDto>> GetApplicants(int requestId)
     {
         return await _db.JobApplications
             .Where(a => a.ServiceRequestId == requestId)
             .Include(a => a.Professional)
-            .Select(a => a.Professional)
+            .ThenInclude(p => p.HandymanProfile)
+            .Select(a => new ApplicantDto
+            {
+                ProfessionalId = a.ProfessionalId,
+                Name = a.Professional.Name,
+                Bio = a.Professional.Bio,
+                Skills = a.Professional.HandymanProfile!.Skills,
+                AppliedAt = a.CreatedAt
+            })
             .ToListAsync();
     }
 
     public async Task SelectProfessional(int requestId, int proId)
     {
-        var request = await _db.ServiceRequests.FindAsync(requestId);
+        var request = await _db.ServiceRequests
+            .FirstOrDefaultAsync(r => r.Id == requestId);
 
         if (request == null)
             throw new Exception("Service request not found");
 
+        if (request.Status != ServiceRequestStatus.Open)
+            throw new Exception("Service already assigned");
+
+        var application = await _db.JobApplications
+            .FirstOrDefaultAsync(a =>
+                a.ServiceRequestId == requestId &&
+                a.ProfessionalId == proId);
+
+        if (application == null)
+            throw new Exception("Application not found");
+
+        // 🔥 assign
         request.ProfessionalId = proId;
         request.Status = ServiceRequestStatus.Pending;
+
+        application.Status = JobApplicationStatus.Accepted;
+
+        // opcional mas elegante
+        var others = _db.JobApplications
+            .Where(a => a.ServiceRequestId == requestId && a.ProfessionalId != proId);
+
+        await others.ForEachAsync(a => a.Status = JobApplicationStatus.Rejected);
 
         await _db.SaveChangesAsync();
     }
@@ -117,6 +146,9 @@ public class CustomerRequestService
     public async Task MarkCompleted(int requestId)
     {
         var request = await _db.ServiceRequests.FindAsync(requestId);
+
+        if (request == null)
+            throw new Exception("Request not found");
 
         request.Status = ServiceRequestStatus.Completed;
 

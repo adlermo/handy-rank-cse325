@@ -1,0 +1,44 @@
+<div class="service-card">
+    <div class="service-header">
+        <h3 class="title">@Title</h3>
+        <span class="status @GetStatusClass(Status)">
+            @Status
+        </span>
+    </div>
+
+    <p class="service-description">
+        @Description
+    </p>
+
+    <div class="service-meta">
+        <span>🔧 @Category</span>
+        <span>📍 @Location</span>
+    </div>
+
+    <div class="service-footer">
+        <small>Created @CreatedAt.ToString("MMM dd")</small>
+        <div class="actions">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+    [Parameter] public string Category { get; set; } = "";
+    [Parameter] public string Location { get; set; } = "";
+    [Parameter] public DateTime CreatedAt { get; set; }
+    [Parameter] public string Status { get; set; } = "";
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    string GetStatusClass(String status) => status switch
+    {
+        "Open" => "status-open",
+        "Pending" => "status-inprogress",
+        "Completed" => "status-completed",
+        "Cancelled" => "status-cancelled",
+        _ => ""
+    };
+}

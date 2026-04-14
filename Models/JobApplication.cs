@@ -10,5 +10,7 @@ public class JobApplication
     public int ProfessionalId { get; set; }
     public User Professional { get; set; } = null!;
 
+    public JobApplicationStatus Status { get; set; }
+
     public DateTime CreatedAt { get; set; }
 }

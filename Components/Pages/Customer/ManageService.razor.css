@@ -1,0 +1,33 @@
+.meta {
+  margin-bottom: 1rem;
+}
+
+.applicant-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.applicant-card:hover {
+  background-color: #f9f9f9;
+}
+
+.applicant-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.applicant-info > p {
+  margin: 0;
+}
+
+.applicant-skills {
+  font-size: 0.9rem;
+  color: var(--color-secondary);
+}

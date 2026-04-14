@@ -1,5 +1,6 @@
 @page "/customer/services"
 @using HandyRank.Components.Shared
+@using HandyRank.Components.Shared.ServiceCards
 @using HandyRank.Features.ServiceRequests.Services
 @attribute [Authorize(Roles = "Customer")]
 @inject CustomerRequestService Service
@@ -27,7 +28,7 @@
         <div class="service-list">
             @foreach (var r in requests)
             {
-                <ServiceCard Request="r" IsCustomer="true" OnDelete="@(id => Delete(id))" />
+                <CustomerServiceCard Request="r" OnDelete="@(id => Delete(id))" />
             }
         </div>
     }

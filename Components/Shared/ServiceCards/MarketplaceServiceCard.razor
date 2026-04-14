@@ -1,0 +1,24 @@
+<ServiceCardBase Title="@Job.Title" Description="@Job.Description" Category="@Job.Category" Location="@Job.Location"
+                 CreatedAt="@Job.CreatedAt" Status="@Job.Status.ToString()">
+
+    @if (Job.Status == ServiceRequestStatus.Open)
+    {
+        @if (!Job.HasApplied)
+        {
+            <button class="btn btn-primary" @onclick="() => OnApply.InvokeAsync(Job.Id)">
+                Apply
+            </button>
+        }
+        else
+        {
+            <button class="btn btn-secondary" disabled>
+                Applied ✅
+            </button>
+        }
+    }
+</ServiceCardBase>
+
+@code {
+    [Parameter] public JobCardDto Job { get; set; } = default!;
+    [Parameter] public EventCallback<int> OnApply { get; set; }
+}
