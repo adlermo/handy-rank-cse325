@@ -16,6 +16,18 @@
             </button>
         }
     }
+
+    @if (Job.Status == ServiceRequestStatus.Completed && Job.Rating != null)
+    {
+        <div class="review-preview">
+            <span>⭐ @Job.Rating</span>
+
+            @if (!string.IsNullOrWhiteSpace(Job.CommentPreview))
+            {
+                <p>"@Job.CommentPreview"</p>
+            }
+        </div>
+    }
 </ServiceCardBase>
 
 @code {

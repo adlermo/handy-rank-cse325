@@ -58,14 +58,14 @@ public class JobDiscoveryService
             })
             .ToListAsync();
     }
-
-    public async Task<List<JobCardDto>> GetMyJobs()
+    public async Task<List<JobCardDto>> GetActiveJobs()
     {
         var userId = await GetUserId();
 
         return await _db.ServiceRequests
             .Include(r => r.Category)
-            .Where(r => r.ProfessionalId == userId)
+            .Where(r => r.ProfessionalId == userId &&
+                        r.Status != ServiceRequestStatus.Completed)
             .OrderByDescending(r => r.CreatedAt)
             .Select(r => new JobCardDto
             {
@@ -76,6 +76,37 @@ public class JobDiscoveryService
                 Location = r.Location,
                 CreatedAt = r.CreatedAt,
                 Status = r.Status,
+            })
+            .ToListAsync();
+    }
+    public async Task<List<JobCardDto>> GetCompletedJobs()
+    {
+        var userId = await GetUserId();
+
+        return await _db.ServiceRequests
+            .Include(r => r.Category)
+            .Where(r => r.ProfessionalId == userId &&
+                        r.Status == ServiceRequestStatus.Completed)
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new JobCardDto
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Description = r.Description,
+                Category = r.Category!.Name,
+                Location = r.Location,
+                CreatedAt = r.CreatedAt,
+                Status = r.Status,
+
+                Rating = _db.Reviews
+                    .Where(rv => rv.ServiceRequestId == r.Id)
+                    .Select(rv => rv.Rating)
+                    .FirstOrDefault(),
+
+                CommentPreview = _db.Reviews
+                    .Where(rv => rv.ServiceRequestId == r.Id)
+                    .Select(rv => rv.Comment)
+                    .FirstOrDefault()
             })
             .ToListAsync();
     }

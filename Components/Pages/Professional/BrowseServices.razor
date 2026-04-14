@@ -24,6 +24,10 @@
         <button class='tab @(activeTab == "my" ? "active" : "")' @onclick='() => SetTab("my")'>
             My Jobs
         </button>
+
+        <button class='tab @(activeTab == "completed" ? "active" : "")' @onclick='() => SetTab("completed")'>
+            Completed Jobs
+        </button>
     </div>
 
     <div class="service-list">
@@ -41,6 +45,13 @@
                 <MarketplaceServiceCard Job="job" />
             }
         }
+        else if (activeTab == "completed")
+        {
+            @foreach (var job in completedJobs)
+            {
+                <MarketplaceServiceCard Job="job" />
+            }
+        }
     </div>
 
 </section>
@@ -52,6 +63,7 @@
 
     List<JobCardDto> openJobs = new();
     List<JobCardDto> myJobs = new();
+    List<JobCardDto> completedJobs = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,7 +73,8 @@
     async Task LoadJobs()
     {
         openJobs = await Jobs.GetAvailableJobs();
-        myJobs = await Jobs.GetMyJobs();
+        myJobs = await Jobs.GetActiveJobs();
+        completedJobs = await Jobs.GetCompletedJobs();
     }
 
     async Task ApplyToJob(int id)
@@ -72,7 +85,7 @@
 
         await Jobs.ApplyToJob(id);
         openJobs = await Jobs.GetAvailableJobs();
-        myJobs = await Jobs.GetMyJobs();
+        myJobs = await Jobs.GetActiveJobs();
 
         loading = false;
     }
