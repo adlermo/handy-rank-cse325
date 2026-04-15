@@ -87,9 +87,34 @@
                         <h2>Professional Info</h2>
 
                         <div class="form-field">
+                            <div class="suggested-skills">
+                                @foreach (var skill in SuggestedSkills)
+                                {
+                                    <button type="button" class="skill-suggestion" @onclick="() => AddSkill(skill)">
+                                        + @skill
+                                    </button>
+                                }
+                            </div>
+
                             <label for="skills" class="form-label">Skills</label>
-                            <InputText id="skills" class="form-control" @bind-Value="form.Skills" />
+                            <InputText id="skills" class="form-control" @bind-Value="form.Skills"
+                                       @onblur="() => form.Skills = NormalizeSkills(form.Skills)" />
                             <ValidationMessage For="() => form.Skills" />
+
+                            @if (!string.IsNullOrWhiteSpace(form.Skills))
+                            {
+                                <div class="skill-tags">
+                                    @foreach (var skill in form.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        <span class="skill-tag">
+                                            @skill.Trim()
+                                            <button type="button" class="remove-skill" @onclick="() => RemoveSkill(skill)">
+                                                ×
+                                            </button>
+                                        </span>
+                                    }
+                                </div>
+                            }
                         </div>
 
                         <div class="profile-grid">
@@ -129,6 +154,17 @@
     private bool isError;
     private string? statusMessage;
     private int progress;
+
+    private static readonly List<string> SuggestedSkills = new()
+    {
+        "plumbing",
+        "electrical",
+        "carpentry",
+        "drywall",
+        "painting",
+        "furniture assembly",
+        "tv mounting"
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -207,7 +243,7 @@
                 Db.HandymanProfiles.Add(user.HandymanProfile);
             }
 
-            user.HandymanProfile.Skills = form.Skills.Trim();
+            user.HandymanProfile.Skills = NormalizeSkills(form.Skills);
             rank = user.HandymanProfile.Rank;
             xp = user.HandymanProfile.XP;
         }
@@ -216,6 +252,44 @@
 
         statusMessage = "Profile saved.";
         isSaving = false;
+    }
+
+    private static string NormalizeSkills(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+
+        var skills = input
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim().ToLower())
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Distinct();
+
+        return string.Join(",", skills);
+    }
+
+    private void AddSkill(string skill)
+    {
+        var current = form.Skills
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim().ToLower())
+            .ToList();
+
+        if (!current.Contains(skill))
+            current.Add(skill);
+
+        form.Skills = string.Join(",", current);
+    }
+
+    private void RemoveSkill(string skillToRemove)
+    {
+        var updated = form.Skills
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim().ToLower())
+            .Where(s => s != skillToRemove.Trim().ToLower())
+            .ToList();
+
+        form.Skills = string.Join(",", updated);
     }
 
     private static bool TryGetUserId(ClaimsPrincipal user, out int userId)
