@@ -1,11 +1,13 @@
 @page "/customer/services/create"
 @using System.ComponentModel.DataAnnotations
 @using HandyRank.Domain.Categories
+@using HandyRank.Features.Location.DTOs
 @using HandyRank.Features.ServiceRequests.Services
 @attribute [Authorize(Roles = "Customer")]
 @inject CustomerRequestService Service
 @inject CategoryService CategoryService
 @inject NavigationManager Navigation
+@inject IHttpClientFactory HttpFactory
 
 <section class="narrow-page page-section">
     <div class="page-header">
@@ -35,7 +37,19 @@
 
                 <div class="form-field">
                     <label class="form-label">Location</label>
-                    <InputText class="form-control" @bind-Value="form.Location" />
+                    <InputText class="form-control" @bind-Value="form.Location" @oninput="OnLocationInput" />
+
+                    @if (suggestions.Any())
+                    {
+                        <ul class="autocomplete-list">
+                            @foreach (var s in suggestions)
+                            {
+                                <li @onclick="() => SelectLocation(s)">
+                                    @s.Description
+                                </li>
+                            }
+                        </ul>
+                    }
                     <ValidationMessage For="() => form.Location" />
                 </div>
 
@@ -71,6 +85,7 @@
 @code {
     private readonly CreateServiceForm form = new();
     private List<ServiceCategory> categories = new();
+    private List<LocationSuggestion> suggestions = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,6 +103,44 @@
         });
 
         Navigation.NavigateTo("/customer/services");
+    }
+
+    private async Task OnLocationInput(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString();
+
+        if (string.IsNullOrWhiteSpace(input) || input.Length < 3)
+        {
+            suggestions.Clear();
+            return;
+        }
+
+        var client = HttpFactory.CreateClient("api");
+
+        var result = await client.GetFromJsonAsync<List<LocationSuggestion>>(
+            $"api/location/autocomplete?input={input}");
+
+        suggestions = result ?? new();
+    }
+
+    private async Task SelectLocation(LocationSuggestion suggestion)
+    {
+        form.Location = suggestion.Description;
+        suggestions.Clear();
+
+        var client = HttpFactory.CreateClient("api");
+
+        var response = await client.GetAsync(
+            $"api/location/details?placeId={suggestion.PlaceId}");
+
+        if (!response.IsSuccessStatusCode) return;
+
+        var coords = await response.Content
+            .ReadFromJsonAsync<(double lat, double lng)?>();
+
+        // opcional (se quiser evoluir depois)
+        // form.Latitude = coords?.lat;
+        // form.Longitude = coords?.lng;
     }
 
     private class CreateServiceForm

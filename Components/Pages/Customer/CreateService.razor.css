@@ -1,0 +1,27 @@
+.form-field {
+  position: relative;
+}
+
+.autocomplete-list {
+  top: 75px;
+  border: 1px solid var(--color-light-gray);
+  border-radius: 8px;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  background: white;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.autocomplete-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.autocomplete-list li:hover {
+  background: #f2f2f2;
+}
