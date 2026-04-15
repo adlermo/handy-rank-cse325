@@ -8,6 +8,7 @@
 @inject CategoryService CategoryService
 @inject NavigationManager Navigation
 @inject IHttpClientFactory HttpFactory
+@inject NavigationManager Nav
 
 <section class="narrow-page page-section">
     <div class="page-header">
@@ -115,10 +116,10 @@
             return;
         }
 
-        var client = HttpFactory.CreateClient("api");
+        var client = HttpFactory.CreateClient();
 
         var result = await client.GetFromJsonAsync<List<LocationSuggestion>>(
-            $"api/location/autocomplete?input={input}");
+            $"{Nav.BaseUri}api/location/autocomplete?input={input}");
 
         suggestions = result ?? new();
     }
@@ -128,10 +129,10 @@
         form.Location = suggestion.Description;
         suggestions.Clear();
 
-        var client = HttpFactory.CreateClient("api");
+        var client = HttpFactory.CreateClient();
 
         var response = await client.GetAsync(
-            $"api/location/details?placeId={suggestion.PlaceId}");
+            $"{Nav.BaseUri}api/location/details?placeId={suggestion.PlaceId}");
 
         if (!response.IsSuccessStatusCode) return;
 

@@ -11,6 +11,7 @@ using HandyRank.Features.Marketplace.Services;
 using HandyRank.Domain.Categories;
 using HandyRank.Features.Gamification.Services;
 using HandyRank.Features.Location.Services;
+using Microsoft.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,10 +56,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 builder.Services.AddAuthorization();
-builder.Services.AddHttpClient("api", client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5081/");
-});
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ServiceRequestService>();
