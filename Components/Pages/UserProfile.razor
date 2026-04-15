@@ -13,8 +13,21 @@
 <section class="narrow-page page-section">
     <div class="page-header">
         <p class="page-eyebrow">Account</p>
-        <h1>Profile</h1>
-        <p class="page-description">Keep your account details current.</p>
+
+        @if (isHandyman)
+        {
+            <div class="profile-hero">
+                <h1>@rank</h1>
+                <p class="muted-text">@xp XP • @(progress)% to next level</p>
+
+                <div class="xp-bar">
+                    <div class="xp-fill" style="width:@(progress)%"></div>
+                </div>
+                <br />
+                <small>@jobsCompleted jobs completed</small>
+                <p class="muted-text">Keep going. You're building your reputation.</p>
+            </div>
+        }
     </div>
 
     <div class="card panel">
@@ -76,7 +89,6 @@
                         <div class="form-field">
                             <label for="skills" class="form-label">Skills</label>
                             <InputText id="skills" class="form-control" @bind-Value="form.Skills" />
-                            <div class="form-text">Example: Plumbing, drywall, appliance repair</div>
                             <ValidationMessage For="() => form.Skills" />
                         </div>
 
@@ -110,11 +122,13 @@
     private string role = string.Empty;
     private string rank = "New";
     private int xp;
+    private int jobsCompleted;
     private bool isHandyman;
     private bool isLoading = true;
     private bool isSaving;
     private bool isError;
     private string? statusMessage;
+    private int progress;
 
     protected override async Task OnInitializedAsync()
     {
@@ -154,7 +168,11 @@
             form.Skills = user.HandymanProfile?.Skills ?? string.Empty;
             rank = user.HandymanProfile?.Rank ?? "New";
             xp = user.HandymanProfile?.XP ?? 0;
+            jobsCompleted = user.HandymanProfile?.TotalJobsCompleted ?? 0;
         }
+
+        var (min, max) = GetRange(xp);
+        progress = (max - min) == 0 ? 0 : (xp - min) * 100 / (max - min);
 
         isLoading = false;
     }
@@ -181,15 +199,11 @@
         user.Bio = form.Bio.Trim();
         user.Location = form.Location.Trim();
 
-        if (user.Role == UserRole.Handyman)
+        if (isHandyman)
         {
             if (user.HandymanProfile is null)
             {
-                user.HandymanProfile = new HandymanProfile
-                {
-                    UserId = user.Id
-                };
-
+                user.HandymanProfile = new HandymanProfile { UserId = user.Id };
                 Db.HandymanProfiles.Add(user.HandymanProfile);
             }
 
@@ -208,6 +222,18 @@
     {
         var userIdValue = user.FindFirstValue(ClaimTypes.NameIdentifier);
         return int.TryParse(userIdValue, out userId);
+    }
+
+    private (int min, int max) GetRange(int xp)
+    {
+        if (xp < 200) return (0, 200);
+        if (xp < 500) return (200, 500);
+        if (xp < 1000) return (500, 1000);
+        if (xp < 2000) return (1000, 2000);
+        if (xp < 4000) return (2000, 4000);
+        if (xp < 7000) return (4000, 7000);
+
+        return (7000, 10000);
     }
 
     private sealed class ProfileForm : IValidatableObject

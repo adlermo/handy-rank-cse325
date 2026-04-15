@@ -1,133 +1,133 @@
 .app-shell {
-    min-height: 100vh;
+  min-height: 100vh;
 }
 
 .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: rgba(246, 241, 209, 0.96);
-    border-bottom: 1px solid rgba(11, 32, 39, 0.12);
-    backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(246, 241, 209, 0.96);
+  border-bottom: 1px solid rgba(11, 32, 39, 0.12);
+  backdrop-filter: blur(8px);
 }
 
 .site-nav {
-    width: min(100%, 1024px);
-    margin: 0 auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  width: min(100%, 1024px);
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .brand-link {
-    color: #0B2027;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1.15rem;
-    font-weight: 800;
-    text-decoration: none;
+  color: #0b2027;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .brand-logo {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
 }
 
 .nav-links {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
 }
 
 .nav-links ::deep a,
 .nav-links ::deep button {
-    color: #0B2027;
-    font-weight: 700;
-    text-decoration: none;
+  color: #0b2027;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .nav-links ::deep a:hover,
 .nav-links ::deep button:hover {
-    color: #40798C;
+  color: #40798c;
 }
 
 .user-link {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logout-form {
-    display: inline;
+  display: inline;
 }
 
 .nav-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 40px;
-    padding: 8px 16px;
-    border: 1px solid #40798C;
-    border-radius: 8px;
-    background: transparent;
-    color: #40798C !important;
-    font: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 2px solid var(--color-danger);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-danger) !important;
+  font: inherit;
 }
 
 .nav-button:hover {
-    background: rgba(64, 121, 140, 0.08);
+  background: rgba(64, 121, 140, 0.08);
 }
 
 .page-main {
-    padding: 24px 0 48px;
+  padding: 24px 0 48px;
 }
 
 .page-container {
-    width: min(100%, 1024px);
-    margin: 0 auto;
-    padding: 0 16px;
+  width: min(100%, 1024px);
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 @media (min-width: 720px) {
-    .site-nav {
-        min-height: 72px;
-        padding: 16px 24px;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-    }
+  .site-nav {
+    min-height: 72px;
+    padding: 16px 24px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-    .nav-links {
-        justify-content: flex-end;
-    }
+  .nav-links {
+    justify-content: flex-end;
+  }
 
-    .page-container {
-        padding: 0 24px;
-    }
+  .page-container {
+    padding: 0 24px;
+  }
 }
 
 #blazor-error-ui {
-    color-scheme: light only;
-    background: #0B2027;
-    bottom: 0;
-    box-shadow: 0 -1px 8px rgba(11, 32, 39, 0.24);
-    box-sizing: border-box;
-    color: white;
-    display: none;
-    left: 0;
-    padding: 16px 48px 16px 16px;
-    position: fixed;
-    width: 100%;
-    z-index: 1000;
+  color-scheme: light only;
+  background: #0b2027;
+  bottom: 0;
+  box-shadow: 0 -1px 8px rgba(11, 32, 39, 0.24);
+  box-sizing: border-box;
+  color: white;
+  display: none;
+  left: 0;
+  padding: 16px 48px 16px 16px;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
 }
 
 #blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 16px;
-    top: 16px;
+  cursor: pointer;
+  position: absolute;
+  right: 16px;
+  top: 16px;
 }

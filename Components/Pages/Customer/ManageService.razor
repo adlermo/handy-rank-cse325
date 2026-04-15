@@ -35,6 +35,9 @@
                     <div class="applicant-card">
                         <div class="applicant-info">
                             <p><strong>@pro.Name</strong></p>
+                            <p class="muted">
+                                @pro.Rank • @pro.TotalJobsCompleted Jobs • ⭐ @pro.Rating.ToString("0.0")
+                            </p>
                             <p>@pro.Bio</p>
                             <p><small class="applicant-skills">@pro.Skills</small></p>
                             <p><small>Applied @pro.AppliedAt.ToShortDateString()</small></p>

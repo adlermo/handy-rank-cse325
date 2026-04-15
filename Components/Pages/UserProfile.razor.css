@@ -1,0 +1,30 @@
+.profile-hero {
+  color: var(--color-surface);
+  background: var(--color-primary);
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.muted-text {
+  color: var(--color-surface);
+  font-size: 0.9rem;
+}
+
+.xp-bar {
+  background: var(--color-surface);
+  height: 8px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.xp-fill {
+  background: var(--color-dark);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.xp-text {
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
