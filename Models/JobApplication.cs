@@ -1,4 +1,6 @@
-using HandyRank.Models;
+using HandyRank.Domain.Enums;
+
+namespace HandyRank.Models;
 
 public class JobApplication
 {

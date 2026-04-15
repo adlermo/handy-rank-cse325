@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using HandyRank.Data;
+using HandyRank.Domain.Enums;
 using HandyRank.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;

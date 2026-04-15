@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using HandyRank.Data;
+using HandyRank.Domain.Enums;
 using HandyRank.Models;
 using Microsoft.EntityFrameworkCore;
 

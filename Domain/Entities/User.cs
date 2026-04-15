@@ -1,3 +1,5 @@
+using HandyRank.Domain.Enums;
+
 namespace HandyRank.Models;
 
 public class User

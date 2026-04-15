@@ -1,3 +1,5 @@
+namespace HandyRank.Domain.Enums;
+
 public enum ServiceRequestStatus
 {
     Open,

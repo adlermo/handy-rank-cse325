@@ -1,3 +1,4 @@
+using HandyRank.Domain.Enums;
 using HandyRank.Models;
 
 public class ServiceRequest
@@ -7,6 +8,7 @@ public class ServiceRequest
     public required string Title { get; set; }
     public required string Description { get; set; }
     public required string Location { get; set; }
+    public JobSize Size { get; set; } = JobSize.Medium;
 
     public int CategoryId { get; set; }
     public ServiceCategory? Category { get; set; }

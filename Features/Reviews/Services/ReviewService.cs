@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using HandyRank.Data;
+using HandyRank.Domain.Enums;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 

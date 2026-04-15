@@ -1,3 +1,5 @@
+using HandyRank.Domain.Enums;
+
 public class JobCardDto
 {
     public int Id { get; set; }

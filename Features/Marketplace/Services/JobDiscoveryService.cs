@@ -1,7 +1,9 @@
 using HandyRank.Data;
+using HandyRank.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
+using HandyRank.Domain.Enums;
 
 namespace HandyRank.Features.Marketplace.Services;
 

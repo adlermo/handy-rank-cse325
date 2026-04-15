@@ -1,4 +1,4 @@
-namespace HandyRank.Models;
+namespace HandyRank.Domain.Enums;
 
 public enum UserRole
 {
