@@ -9,6 +9,7 @@ using Npgsql;
 using HandyRank.Features.ServiceRequests.Services;
 using HandyRank.Features.Marketplace.Services;
 using HandyRank.Domain.Categories;
+using HandyRank.Features.Gamification.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,7 @@ builder.Services.AddScoped<CustomerRequestService>();
 builder.Services.AddScoped<JobDiscoveryService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<GamificationService>();
 
 if (!builder.Environment.IsEnvironment("Testing"))
 {

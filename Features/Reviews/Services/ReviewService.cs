@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using HandyRank.Data;
 using HandyRank.Domain.Enums;
+using HandyRank.Features.Gamification.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,13 @@ public class ReviewService
     private readonly AppDbContext _db;
     private readonly AuthenticationStateProvider _auth;
 
-    public ReviewService(AppDbContext db, AuthenticationStateProvider auth)
+    private readonly GamificationService _gamification;
+
+    public ReviewService(AppDbContext db, AuthenticationStateProvider auth, GamificationService gamification)
     {
         _db = db;
         _auth = auth;
+        _gamification = gamification;
     }
 
     private async Task<int> GetUserId()
@@ -57,11 +61,14 @@ public class ReviewService
         if (alreadyReviewed)
             throw new Exception("Already reviewed");
 
+        if (service.ProfessionalId == null)
+            throw new Exception("Service has no professional assigned");
+
         var review = new Review
         {
             ServiceRequestId = serviceRequestId,
             CustomerId = userId,
-            ProfessionalId = (int)service.ProfessionalId!,
+            ProfessionalId = service.ProfessionalId.Value,
             Rating = rating,
             Comment = comment,
             Tags = tagIds.Select(id => (ReviewTag)id).ToList()
@@ -69,5 +76,8 @@ public class ReviewService
 
         _db.Reviews.Add(review);
         await _db.SaveChangesAsync();
+
+
+        await _gamification.ApplyReviewXP(review.Id);
     }
 }

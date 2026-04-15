@@ -16,6 +16,10 @@ public class JobCardDto
 
     public bool HasApplied { get; set; }
 
+    public int ProfessionalXP { get; set; }
+    public string ProfessionalRank { get; set; } = "";
+    public double ProfessionalRating { get; set; }
+
     public int? Rating { get; set; }
     public string? CommentPreview { get; set; }
 }

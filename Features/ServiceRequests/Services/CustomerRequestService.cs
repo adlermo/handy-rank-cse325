@@ -104,7 +104,11 @@ public class CustomerRequestService
                 Name = a.Professional.Name,
                 Bio = a.Professional.Bio,
                 Skills = a.Professional.HandymanProfile!.Skills,
-                AppliedAt = a.CreatedAt
+                AppliedAt = a.CreatedAt,
+                Rank = a.Professional.HandymanProfile!.Rank,
+                TotalJobsCompleted = a.Professional.HandymanProfile!.TotalJobsCompleted,
+                Rating = a.Professional.HandymanProfile!.RatingAverage
+
             })
             .ToListAsync();
     }

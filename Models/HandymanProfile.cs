@@ -11,5 +11,7 @@ public class HandymanProfile
 
     public string Skills { get; set; } = string.Empty;
     public int XP { get; set; }
-    public string Rank { get; set; } = "New";
+    public string Rank { get; set; } = "Rookie";
+    public int TotalJobsCompleted { get; set; }
+    public double RatingAverage { get; set; }
 }
