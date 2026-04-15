@@ -5,9 +5,11 @@
 @using System.Security.Claims
 @using HandyRank.Data
 @using HandyRank.Domain.Enums
+@using HandyRank.Features.Location.DTOs
 @using HandyRank.Models
 @using Microsoft.EntityFrameworkCore
 @inject AppDbContext Db
+@inject IHttpClientFactory HttpFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <section class="narrow-page page-section">
@@ -76,7 +78,20 @@
 
                     <div class="form-field">
                         <label for="location" class="form-label">Location</label>
-                        <InputText id="location" class="form-control" @bind-Value="form.Location" />
+                        <InputText id="location" class="form-control" @bind-Value="form.Location"
+                                   @oninput="OnLocationInput" />
+
+                        @if (suggestions.Any())
+                        {
+                            <ul class="autocomplete-list">
+                                @foreach (var s in suggestions)
+                                {
+                                    <li @onclick="() => SelectLocation(s)">
+                                        @s.Description
+                                    </li>
+                                }
+                            </ul>
+                        }
                         <ValidationMessage For="() => form.Location" />
                     </div>
                 </section>
@@ -154,6 +169,8 @@
     private bool isError;
     private string? statusMessage;
     private int progress;
+
+    private List<LocationSuggestion> suggestions = new();
 
     private static readonly List<string> SuggestedSkills = new()
     {
@@ -234,6 +251,9 @@
         user.Name = form.Name.Trim();
         user.Bio = form.Bio.Trim();
         user.Location = form.Location.Trim();
+        user.LocationName = form.LocationName;
+        user.Latitude = form.Latitude;
+        user.Longitude = form.Longitude;
 
         if (isHandyman)
         {
@@ -252,6 +272,62 @@
 
         statusMessage = "Profile saved.";
         isSaving = false;
+    }
+
+    private async Task OnLocationInput(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString();
+
+        if (string.IsNullOrWhiteSpace(input) || input.Length < 3)
+        {
+            suggestions.Clear();
+            return;
+        }
+
+        var client = HttpFactory.CreateClient("api");
+        var result = await client.GetFromJsonAsync<List<LocationSuggestion>>(
+    $"api/location/autocomplete?input={input}");
+
+        suggestions = result ?? new();
+    }
+
+    private async Task SelectLocation(LocationSuggestion suggestion)
+    {
+        form.Location = suggestion.Description;
+        form.LocationName = suggestion.Description;
+
+        suggestions.Clear();
+
+        var client = HttpFactory.CreateClient("api");
+
+        var response =
+            await client.GetAsync($"api/location/details?placeId={suggestion.PlaceId}");
+
+        if (!response.IsSuccessStatusCode) return;
+
+        var coords =
+            await response.Content.ReadFromJsonAsync<(double lat, double lng)?>();
+
+        if (coords is not null)
+        {
+            form.Latitude = coords.Value.lat;
+            form.Longitude = coords.Value.lng;
+        }
+    }
+
+    private async Task LoadLocationDetails(string placeId)
+    {
+        var client = HttpFactory.CreateClient("api");
+        var result = await client.GetFromJsonAsync<GooglePlaceDetailsResponse>(
+            $"api/location/details?placeId={placeId}");
+
+        var location = result?.result?.geometry?.location;
+
+        if (location is not null)
+        {
+            form.Latitude = location.lat;
+            form.Longitude = location.lng;
+        }
     }
 
     private static string NormalizeSkills(string input)
@@ -323,6 +399,10 @@
         [Required]
         [StringLength(User.MaxLocationLength)]
         public string Location { get; set; } = string.Empty;
+
+        public string LocationName { get; set; } = string.Empty;
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
 
         [StringLength(HandymanProfile.MaxSkillsLength)]
         public string Skills { get; set; } = string.Empty;

@@ -10,6 +10,7 @@ using HandyRank.Features.ServiceRequests.Services;
 using HandyRank.Features.Marketplace.Services;
 using HandyRank.Domain.Categories;
 using HandyRank.Features.Gamification.Services;
+using HandyRank.Features.Location.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 builder.Services.AddAuthorization();
+builder.Services.AddHttpClient("api", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5081/");
+});
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ServiceRequestService>();
@@ -62,6 +67,7 @@ builder.Services.AddScoped<JobDiscoveryService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<GamificationService>();
+builder.Services.AddScoped<LocationService>();
 
 if (!builder.Environment.IsEnvironment("Testing"))
 {
@@ -99,6 +105,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapAuthEndpoints();
 app.MapProfileEndpoints();
+app.MapLocationEndpoints();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

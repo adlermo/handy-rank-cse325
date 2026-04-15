@@ -14,6 +14,9 @@ public class User
     public string Name { get; set; } = string.Empty;
     public string Bio { get; set; } = string.Empty;
     public string Location { get; set; } = string.Empty;
+    public string LocationName { get; set; } = string.Empty;
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
 
     public UserRole Role { get; set; } = UserRole.Customer;
 
